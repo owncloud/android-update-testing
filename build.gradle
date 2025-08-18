@@ -1,0 +1,64 @@
+defaultTasks 'clean','test'
+
+project.ext {
+    cucumberVersion = '7.21.0'
+    apacheCommonsExecVersion = '1.3'
+    apacheCommonsLangVersion = '3.9'
+    apacheCommonsTextVersion = '1.9'
+    apacheCommonsCodec = '1.10'
+    apacheCommonsIo = '2.6'
+    javaClientVersion = '9.3.0'
+    okhttpVersion= '3.12.13'
+    slf4japiVersion = '1.7.7'
+    junitVersion = '4.13.1'
+    jsonVersion = '20200518'
+    assertjcoreVersion = '3.8.0'
+    slf4jVersion = '2.0.7'
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+}
+
+apply plugin: 'java'
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java:' + cucumberVersion
+    testImplementation 'io.cucumber:cucumber-junit:' + cucumberVersion
+    testImplementation 'io.cucumber:cucumber-core:' + cucumberVersion
+    testImplementation 'io.cucumber:cucumber-picocontainer:' + cucumberVersion
+    implementation 'org.json:json:' + jsonVersion
+    testImplementation 'org.apache.commons:commons-exec:' + apacheCommonsExecVersion
+    testImplementation 'org.apache.commons:commons-lang3:' + apacheCommonsLangVersion
+
+    implementation 'org.slf4j:slf4j-nop:' + slf4jVersion
+    implementation 'io.appium:java-client:' + javaClientVersion
+    implementation 'com.squareup.okhttp3:okhttp:' + okhttpVersion
+    implementation 'org.apache.commons:commons-text:' + apacheCommonsTextVersion
+    implementation 'commons-codec:commons-codec:' + apacheCommonsCodec
+    implementation 'commons-io:commons-io:' + apacheCommonsIo
+
+    // Other dependencies
+    testImplementation "org.slf4j:slf4j-api:" + slf4japiVersion,
+            "junit:junit:" + junitVersion,
+            "org.assertj:assertj-core:" + assertjcoreVersion
+}
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperty "server", System.getProperty("server")
+    systemProperty "username", System.getProperty("username")
+    systemProperty "password", System.getProperty("password")
+}
+
+gradle.startParameter.continueOnFailure = true
