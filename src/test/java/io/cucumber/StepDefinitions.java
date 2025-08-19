@@ -67,17 +67,9 @@ public class StepDefinitions {
         StepLogger.logCurrentStep(Level.FINE);
         world.filelistPage.openPasscode();
         String passcode = LocProperties.getProperties().getProperty("passcode");
-        world.passcodePage.enterPasscode(
-                String.valueOf(passcode.charAt(0)),
-                String.valueOf(passcode.charAt(1)),
-                String.valueOf(passcode.charAt(2)),
-                String.valueOf(passcode.charAt(3)));
+        enterPasscode(passcode);
         // Repetition
-        world.passcodePage.enterPasscode(
-                String.valueOf(passcode.charAt(0)),
-                String.valueOf(passcode.charAt(1)),
-                String.valueOf(passcode.charAt(2)),
-                String.valueOf(passcode.charAt(3)));
+        enterPasscode(passcode);
     }
 
     @When("log in")
@@ -126,10 +118,14 @@ public class StepDefinitions {
         StepLogger.logCurrentStep(Level.FINE);
         assertTrue(world.passcodePage.isPasscodeVisible());
         String passcode = LocProperties.getProperties().getProperty("passcode");
+        enterPasscode(passcode);
+    }
+
+    private void enterPasscode(String passcode){
         world.passcodePage.enterPasscode(
-                String.valueOf(passcode.charAt(0)),
-                String.valueOf(passcode.charAt(1)),
-                String.valueOf(passcode.charAt(2)),
-                String.valueOf(passcode.charAt(3)));
+            String.valueOf(passcode.charAt(0)),
+            String.valueOf(passcode.charAt(1)),
+            String.valueOf(passcode.charAt(2)),
+            String.valueOf(passcode.charAt(3)));
     }
 }
