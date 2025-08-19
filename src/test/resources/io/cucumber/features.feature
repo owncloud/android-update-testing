@@ -9,8 +9,10 @@ Feature: App updated
     Given app is installed
     When log in
     And list of files is displayed
+    And passcode is set
     And app is reinstalled
-    Then the following items should be displayed
+    Then passcode view is displayed
+    And the following items should be displayed
       | Pictures  |
       | Documents |
       | AAAA.txt  |

@@ -4,6 +4,7 @@
 
 package io.android;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
@@ -29,6 +30,7 @@ public class FilelistPage extends CommonPage {
     private WebElement settingsButton;
 
     public static FilelistPage instance;
+    private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
 
     private FilelistPage() {
         super();
@@ -44,7 +46,7 @@ public class FilelistPage extends CommonPage {
 
     public boolean isViewVisible() {
         Log.log(Level.FINE, "Starts: Check if file list view is visible");
-        waitById(WAIT_TIME,"com.owncloud.android:id/fab_expand_menu_button");
+        waitById(fabId);
         return !toolbar.isEmpty() && !bottomBar.isEmpty();
     }
 
@@ -59,4 +61,10 @@ public class FilelistPage extends CommonPage {
         settingsButton.click();
     }
 
+    public void openPasscode() {
+        Log.log(Level.FINE, "Starts: Open Passocode Settings");
+        openSettings();
+        findListUIAutomatorText("Security").get(0).click();
+        findListUIAutomatorText("Passcode lock").get(0).click();
+    }
 }

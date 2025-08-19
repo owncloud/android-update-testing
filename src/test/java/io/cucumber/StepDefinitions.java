@@ -15,6 +15,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import utils.LocProperties;
 import utils.log.Log;
 import utils.log.StepLogger;
 
@@ -61,6 +62,24 @@ public class StepDefinitions {
         StepLogger.logCurrentStep(Level.FINE);
     }
 
+    @Given("passcode is set")
+    public void passcodeIsSetTo() {
+        StepLogger.logCurrentStep(Level.FINE);
+        world.filelistPage.openPasscode();
+        String passcode = LocProperties.getProperties().getProperty("passcode");
+        world.passcodePage.enterPasscode(
+                String.valueOf(passcode.charAt(0)),
+                String.valueOf(passcode.charAt(1)),
+                String.valueOf(passcode.charAt(2)),
+                String.valueOf(passcode.charAt(3)));
+        // Repetition
+        world.passcodePage.enterPasscode(
+                String.valueOf(passcode.charAt(0)),
+                String.valueOf(passcode.charAt(1)),
+                String.valueOf(passcode.charAt(2)),
+                String.valueOf(passcode.charAt(3)));
+    }
+
     @When("log in")
     public void weLogin() {
         StepLogger.logCurrentStep(Level.FINE);
@@ -100,5 +119,17 @@ public class StepDefinitions {
         String commit = System.getProperty("commit");
         Log.log(Level.FINE, "Checking commit: " + commit);
         assertTrue(world.settingsPage.isCommitCorrect(commit));
+    }
+
+    @Then("passcode view is displayed")
+    public void passcodeViewIsDisplayed() {
+        StepLogger.logCurrentStep(Level.FINE);
+        assertTrue(world.passcodePage.isPasscodeVisible());
+        String passcode = LocProperties.getProperties().getProperty("passcode");
+        world.passcodePage.enterPasscode(
+                String.valueOf(passcode.charAt(0)),
+                String.valueOf(passcode.charAt(1)),
+                String.valueOf(passcode.charAt(2)),
+                String.valueOf(passcode.charAt(3)));
     }
 }

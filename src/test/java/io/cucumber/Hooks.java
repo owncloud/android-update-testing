@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 
 import io.android.AndroidManager;
+import io.android.CommonPage;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -34,6 +35,7 @@ public class Hooks {
         Log.log(Level.FINE, "START SCENARIO EXECUTION: " + scenario.getName());
         AndroidManager.getDriver().activateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
+        CommonPage.startRecording();
     }
 
     @After
@@ -41,6 +43,7 @@ public class Hooks {
         AndroidManager.getDriver().terminateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
         cleanUp();
+        CommonPage.stopRecording();
         Log.log(Level.FINE, "END SCENARIO EXECUTION: " + scenario.getName() + "\n\n");
     }
 
