@@ -22,6 +22,12 @@ public class FilelistPage extends CommonPage {
     @AndroidFindBy(id = "com.owncloud.android:id/bottom_nav_view")
     private List<WebElement> bottomBar;
 
+    @AndroidFindBy(id = "com.owncloud.android:id/root_toolbar_left_icon")
+    private List<WebElement> hamburgerButton;
+
+    @AndroidFindBy(id = "com.owncloud.android:id/nav_settings")
+    private WebElement settingsButton;
+
     public static FilelistPage instance;
 
     private FilelistPage() {
@@ -45,6 +51,12 @@ public class FilelistPage extends CommonPage {
     public boolean isItemInList(String itemName) {
         Log.log(Level.FINE, "Starts: Check if item is in list: " + itemName);
         return !findListUIAutomatorText(itemName).isEmpty();
+    }
+
+    public void openSettings() {
+        Log.log(Level.FINE, "Starts: Open Settings");
+        hamburgerButton.get(0).click();
+        settingsButton.click();
     }
 
 }

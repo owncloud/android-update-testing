@@ -59,6 +59,7 @@ test {
     systemProperty "server", System.getProperty("server")
     systemProperty "username", System.getProperty("username")
     systemProperty "password", System.getProperty("password")
+    systemProperty "commit", System.getProperty("commit")
 }
 
 gradle.startParameter.continueOnFailure = true

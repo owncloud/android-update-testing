@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -90,5 +91,14 @@ public class StepDefinitions {
             Log.log(Level.FINE, "Checking " + name);
             assertTrue(world.filelistPage.isItemInList(name));
         }
+    }
+
+    @And("the correct commit is displayed in Settings")
+    public void theCorrectCommitIsDisplayedInSettings() {
+        StepLogger.logCurrentStep(Level.FINE);
+        world.filelistPage.openSettings();
+        String commit = System.getProperty("commit");
+        Log.log(Level.FINE, "Checking commit: " + commit);
+        assertTrue(world.settingsPage.isCommitCorrect(commit));
     }
 }

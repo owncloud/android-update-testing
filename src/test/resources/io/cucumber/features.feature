@@ -15,3 +15,4 @@ Feature: App updated
       | Documents |
       | AAAA.txt  |
       | blank.jpg |
+    And the correct commit is displayed in Settings
