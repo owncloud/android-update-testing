@@ -1,8 +1,8 @@
 # Update Testing
 
-Given two different versions of the app, it verifies that migration from the older one to the newer one does not break or crash.
+This project verifies that upgrading from an older version of the app to a newer one does not cause crashes or break functionality.
 
-Test in the current repository is intended to be enclosed in a CI workflow that builds the older and newer versions for every PR.
+The tests in this repository are designed to run within a CI workflow that builds both the older and newer versions for every pull request.
 
 ## Setup
 
@@ -36,7 +36,7 @@ Command:
 4. Check list of files
 5. Add a passcode to the app
 6. Install the newest version over the older (without reinstalling)
-7. Check the passcode, the list of files and the commit hash
+7. Verifies the passcode, the list of files, and the commit hash
 
 (open to add more checks)
 
