@@ -32,6 +32,17 @@ public class FilelistPage extends CommonPage {
     public static FilelistPage instance;
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
 
+    @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Back\"]")
+    private WebElement back;
+
+    @AndroidFindBy(uiAutomator = "new UiSelector().resourceId(\"com.owncloud.android:id/action_mode_close_button\");")
+    private WebElement closeSelectionMode;
+
+    @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
+    private WebElement textPreview;
+
+
+
     private FilelistPage() {
         super();
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
@@ -44,6 +55,16 @@ public class FilelistPage extends CommonPage {
         return instance;
     }
 
+    public void download(String itemName) {
+        Log.log(Level.FINE, "Starts: download action: " + itemName);
+        findListUIAutomatorText(itemName).get(0).click();
+    }
+
+    public void backListFiles() {
+        Log.log(Level.FINE, "Start: Back to the list of files");
+        back.click();
+    }
+
     public boolean isViewVisible() {
         Log.log(Level.FINE, "Starts: Check if file list view is visible");
         waitById(fabId);
@@ -53,6 +74,20 @@ public class FilelistPage extends CommonPage {
     public boolean isItemInList(String itemName) {
         Log.log(Level.FINE, "Starts: Check if item is in list: " + itemName);
         return !findListUIAutomatorText(itemName).isEmpty();
+    }
+
+    public boolean isItemPreviewed() {
+        return textPreview.isDisplayed();
+    }
+
+    public void openMenuActions(String operation) {
+        findUIAutomatorDescription("More options").click();
+        findListUIAutomatorText(operation).get(0).click();
+    }
+
+    public void closeSelectionMode() {
+        Log.log(Level.FINE, "Starts: close selection mode");
+        closeSelectionMode.click();
     }
 
     public void openSettings() {

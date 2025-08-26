@@ -44,6 +44,7 @@ public class Hooks {
                 LocProperties.getProperties().getProperty("appPackage"));
         cleanUp();
         CommonPage.stopRecording();
+        world.filelistPage.cleanUpDevice();
         Log.log(Level.FINE, "END SCENARIO EXECUTION: " + scenario.getName() + "\n\n");
     }
 

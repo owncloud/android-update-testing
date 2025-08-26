@@ -9,6 +9,8 @@ Feature: App updated
     Given app is installed
     When log in
     And list of files is displayed
+    And file AAAA.txt is downloaded
+    And file blank.jpg is av.offline
     And passcode is set
     And app is reinstalled
     Then passcode view is displayed

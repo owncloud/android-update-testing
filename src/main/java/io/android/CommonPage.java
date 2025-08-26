@@ -5,7 +5,12 @@
 package io.android;
 
 import org.apache.commons.codec.binary.Base64;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Pause;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -16,7 +21,10 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import io.appium.java_client.AppiumBy;
@@ -44,6 +52,53 @@ public class CommonPage {
     public static void waitById(String resourceId) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
         wait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id(resourceId)));
+    }
+
+    public WebElement findUIAutomatorDescription(String description) {
+        return driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiSelector().description(\"" + description + "\");"));
+    }
+
+    public void longPress(String text) {
+        Log.log(Level.FINE, "Starting long press on element with text: " + text);
+        // Find the element using exact text match
+        WebElement element = driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiSelector().text(\"" + text + "\")"));
+        Log.log(Level.FINE, "Target element text: " + element.getText());
+        Log.log(Level.FINE, "Location: " + element.getLocation());
+        // Wait until the element is actually visible and enabled
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
+        wait.until(driver1 -> element.isDisplayed() && element.isEnabled());
+        // Get the element's location and size to calculate its center
+        Point location = element.getLocation();
+        Dimension size = element.getSize();
+        int centerX = location.getX() + size.getWidth() / 2;
+        int centerY = location.getY() + size.getHeight() / 2;
+        Log.log(Level.FINE, "Pressing at: (" + centerX + ", " + centerY + ")");
+        // Set up the long press gesture using W3C actions
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence longPress = new Sequence(finger, 1);
+        // Move the finger to the center of the element
+        longPress.addAction(finger.createPointerMove(Duration.ZERO,
+                PointerInput.Origin.viewport(), centerX, centerY));
+        // Touch down (press)
+        longPress.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        // Hold for 2 seconds
+        longPress.addAction(new Pause(finger, Duration.ofSeconds(2)));
+        // Release (lift up)
+        longPress.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        // Execute the long press gesture
+        driver.perform(List.of(longPress));
+    }
+
+    public void cleanUpDevice() {
+        Log.log(Level.FINE, "Starts: Clean up device, owncloud folder");
+        String downloadFolder = "/sdcard/Download";
+        // Remove owncloud folder from device
+        Map<String, Object> args = new HashMap<>();
+        args.put("command", "rm");
+        args.put("args", Arrays.asList("-rf", downloadFolder + "/*"));
+        driver.executeScript("mobile: shell", args);
     }
 
     public static void startRecording() {

@@ -87,6 +87,23 @@ public class StepDefinitions {
         assertTrue(world.filelistPage.isViewVisible());
     }
 
+    @When("file {word} is {word}")
+    public void fileIsDownloaded(String fileName, String operation) throws InterruptedException {
+        StepLogger.logCurrentStep(Level.FINE);
+        switch (operation) {
+            case "downloaded" -> {
+                world.filelistPage.download(fileName);
+                assertTrue(world.filelistPage.isItemPreviewed());
+                world.filelistPage.backListFiles();
+            }
+            case "av.offline" -> {
+                world.filelistPage.longPress(fileName);
+                world.filelistPage.openMenuActions("Set as available offline");
+                world.filelistPage.closeSelectionMode();
+            }
+        }
+    }
+
     @When("app is reinstalled")
     public void appIsReinstalled() {
         StepLogger.logCurrentStep(Level.FINE);
@@ -104,7 +121,7 @@ public class StepDefinitions {
         }
     }
 
-    @And("the correct commit is displayed in Settings")
+    @Then("the correct commit is displayed in Settings")
     public void theCorrectCommitIsDisplayedInSettings() {
         StepLogger.logCurrentStep(Level.FINE);
         world.filelistPage.openSettings();
