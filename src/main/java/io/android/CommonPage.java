@@ -93,12 +93,29 @@ public class CommonPage {
 
     public void cleanUpDevice() {
         Log.log(Level.FINE, "Starts: Clean up device, owncloud folder");
-        String downloadFolder = "/sdcard/Download";
         // Remove owncloud folder from device
         Map<String, Object> args = new HashMap<>();
         args.put("command", "rm");
-        args.put("args", Arrays.asList("-rf", downloadFolder + "/*"));
+        args.put("args", Arrays.asList("-rf", getDownloadsFolder() + "/*"));
         driver.executeScript("mobile: shell", args);
+    }
+
+    private String getDownloadsFolder() {
+        Log.log(Level.FINE, "Starts: Get downloads folder");
+        Map<String, Object> args = new HashMap<>();
+        args.put("command", "ls");
+        args.put("args", Arrays.asList("/sdcard"));
+        String output = (String) driver.executeScript("mobile: shell", args);
+
+        if (output.contains("Download")) {
+            Log.log(Level.FINE, "/sdcard/Download");
+            return "/sdcard/Download";
+        } else if (output.contains("Downloads")) {
+            Log.log(Level.FINE, "/sdcard/Downloads");
+            return "/sdcard/Downloads";
+        } else {
+            return "";
+        }
     }
 
     public static void startRecording() {

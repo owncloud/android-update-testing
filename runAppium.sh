@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
 npm install -g appium
-appium -v --allow-insecure=adb_shell
+appium -v
 appium driver install uiautomator2
-appium &>/dev/null &
+appium &>/dev/null --allow-insecure=adb_shell &
