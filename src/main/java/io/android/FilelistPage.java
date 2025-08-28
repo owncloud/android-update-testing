@@ -4,11 +4,12 @@
 
 package io.android;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import io.appium.java_client.pagefactory.AndroidFindBy;
@@ -40,8 +41,6 @@ public class FilelistPage extends CommonPage {
 
     @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
     private WebElement textPreview;
-
-
 
     private FilelistPage() {
         super();
@@ -101,5 +100,23 @@ public class FilelistPage extends CommonPage {
         openSettings();
         findListUIAutomatorText("Security").get(0).click();
         findListUIAutomatorText("Passcode lock").get(0).click();
+    }
+
+    public String pullList(String folderId) {
+        Log.log(Level.FINE, "Starts: pull file from: " + folderId);
+        Map<String, Object> args = new HashMap<>();
+        String user = System.getProperty("username");
+        String owncloudFolder = getDownloadsFolder() + "/owncloud/";
+        String server = System.getProperty("server")
+                .replaceFirst("^https?://", "")
+                .replace(":", "%3A" );
+        String target = owncloudFolder + user + "@" + server  + "/" + folderId;
+        Log.log(Level.FINE, "Command args to execute: " + target);
+        args.put("command", "ls");
+        args.put("args", List.of(target));
+
+        String output = (String) driver.executeScript("mobile: shell", args);
+        Log.log(Level.FINE, "List of files in given folder: " + output);
+        return output;
     }
 }

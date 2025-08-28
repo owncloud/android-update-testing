@@ -19,4 +19,7 @@ Feature: App updated
       | Documents |
       | AAAA.txt  |
       | blank.jpg |
+    And the following items should be downloaded
+      | AAAA.txt  |
+      | blank.jpg |
     And the correct commit is displayed in Settings

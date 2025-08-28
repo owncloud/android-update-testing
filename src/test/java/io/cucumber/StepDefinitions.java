@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -118,6 +117,21 @@ public class StepDefinitions {
             String name = rows.get(0);
             Log.log(Level.FINE, "Checking " + name);
             assertTrue(world.filelistPage.isItemInList(name));
+        }
+    }
+
+    @Then("the following items should be downloaded")
+    public void theFollowingItemsShouldBeDownloaded(DataTable table) throws IOException {
+        StepLogger.logCurrentStep(Level.FINE);
+        String folderId = world.graphAPI.getPersonal().getId().replace("$", "\\$");
+        Log.log(Level.FINE, "Folder id: " + folderId);
+        String listFiles = world.filelistPage.pullList(folderId);
+        Log.log(Level.FINE, "Pulled list " + listFiles.replace("\n", " "));
+        List<List<String>> listItems = table.asLists();
+        for (List<String> rows : listItems) {
+            String itemName = rows.get(0);
+            Log.log(Level.FINE, "Checking itemName: " + itemName);
+            assertTrue(listFiles.contains(itemName));
         }
     }
 

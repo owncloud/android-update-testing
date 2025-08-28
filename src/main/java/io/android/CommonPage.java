@@ -100,7 +100,7 @@ public class CommonPage {
         driver.executeScript("mobile: shell", args);
     }
 
-    private String getDownloadsFolder() {
+    protected String getDownloadsFolder() {
         Log.log(Level.FINE, "Starts: Get downloads folder");
         Map<String, Object> args = new HashMap<>();
         args.put("command", "ls");

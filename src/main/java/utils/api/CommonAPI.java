@@ -106,13 +106,13 @@ public class CommonAPI {
         return request;
     }
 
-    //overloaded, to use with specific credentials
-    protected Request getRequest(String url, String userName) {
+    protected Request getRequest(String url) {
+        String credentialsB64 = Base64.getEncoder().encodeToString((user + ":" + password).getBytes());
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("OCS-APIREQUEST", "true")
                 .addHeader("User-Agent", userAgent)
-                .addHeader("Authorization", "Basic " + credentialsBuilder(userName))
+                .addHeader("Authorization", "Basic " + credentialsB64)
                 .addHeader("Host", host)
                 .get()
                 .build();
@@ -128,7 +128,7 @@ public class CommonAPI {
 
     private String getPersonalDrives(String url, String userName) throws IOException {
         Log.log(Level.FINE, "Starts: Call get personal ID: " + url);
-        Request request = getRequest(url + graphDrivesEndpoint, userName);
+        Request request = getRequest(url + graphDrivesEndpoint);
         Response response = httpClient.newCall(request).execute();
         String body = response.body().string();
         response.close();

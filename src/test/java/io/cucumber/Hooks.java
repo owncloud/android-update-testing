@@ -63,13 +63,5 @@ public class Hooks {
             //Empty trashbins
             world.trashbinAPI.emptyTrashbin(userToClean);
         }
-        //Remove spaces
-        //if (System.getProperty("backend").equals("oCIS")) {
-        //    world.graphAPI.removeSpacesOfUser();
-        //}
-        //Remove owncloud folder from device
-        //world.devicePage.cleanUpDevice();
-        //Remove tmp folder from device
-        //world.devicePage.cleanUpTemp();
     }
 }
