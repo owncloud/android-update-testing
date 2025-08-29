@@ -119,4 +119,10 @@ public class FilelistPage extends CommonPage {
         Log.log(Level.FINE, "List of files in given folder: " + output);
         return output;
     }
+
+    public void refreshList() {
+        Log.log(Level.FINE, "Refresh list");
+        waitById(WAIT_TIME, bottomBar.get(0));
+        swipe(0.50, 0.30, 0.50, 0.80);
+    }
 }

@@ -54,6 +54,11 @@ public class CommonPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id(resourceId)));
     }
 
+    public static void waitById(int timeToWait, WebElement mobileElement) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeToWait));
+        wait.until(ExpectedConditions.visibilityOf(mobileElement));
+    }
+
     public WebElement findUIAutomatorDescription(String description) {
         return driver.findElement(AppiumBy.androidUIAutomator(
                 "new UiSelector().description(\"" + description + "\");"));
@@ -89,6 +94,23 @@ public class CommonPage {
         longPress.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         // Execute the long press gesture
         driver.perform(List.of(longPress));
+    }
+
+    public void swipe(double startx, double starty, double endx, double endy) {
+        Dimension size = driver.manage().window().getSize();
+        int startY = (int) (size.height * starty);
+        int endY = (int) (size.height * endy);
+        int startX = (int) (size.width * startx);
+        int endX = (int) (size.width * endx);
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence swipe = new Sequence(finger, 1);
+        swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000),
+                PointerInput.Origin.viewport(), startX, startY));
+        swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000),
+                PointerInput.Origin.viewport(), endX, endY));
+        swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        driver.perform(Arrays.asList(swipe));
     }
 
     public void cleanUpDevice() {
