@@ -3,4 +3,4 @@ set -ex
 npm install -g appium
 appium -v
 appium driver install uiautomator2
-appium &>/dev/null --allow-insecure=adb_shell &
+appium --allow-insecure=adb_shell &>/dev/null &
