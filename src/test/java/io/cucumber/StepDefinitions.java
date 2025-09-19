@@ -113,6 +113,8 @@ public class StepDefinitions {
     public void theFollowingItemsShouldBeDisplayed(DataTable table) {
         StepLogger.logCurrentStep(Level.FINE);
         world.filelistPage.refreshList();
+        // To avoid flakyness...
+        world.filelistPage.refreshList();
         List<List<String>> listItems = table.asLists();
         for (List<String> rows : listItems) {
             String name = rows.get(0);
