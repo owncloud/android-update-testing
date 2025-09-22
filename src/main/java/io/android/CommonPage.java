@@ -35,7 +35,7 @@ import utils.log.Log;
 public class CommonPage {
 
     protected static AndroidDriver driver = AndroidManager.getDriver();
-    protected static final int WAIT_TIME = 10;
+    protected static final int WAIT_TIME = 20;
 
     public CommonPage() {
     }
