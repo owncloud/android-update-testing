@@ -32,6 +32,8 @@ public class FilelistPage extends CommonPage {
 
     public static FilelistPage instance;
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
+    private final String recyclerViewId = "com.owncloud.android:id/recyclerView_main_file_list";
+    private final String bottomBarId = "com.owncloud.android:id/bottom_nav_view";
 
     @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Back\"]")
     private WebElement back;
@@ -67,6 +69,7 @@ public class FilelistPage extends CommonPage {
     public boolean isViewVisible() {
         Log.log(Level.FINE, "Starts: Check if file list view is visible");
         waitById(fabId);
+        waitById(recyclerViewId);
         return !toolbar.isEmpty() && !bottomBar.isEmpty();
     }
 
@@ -122,7 +125,7 @@ public class FilelistPage extends CommonPage {
 
     public void refreshList() {
         Log.log(Level.FINE, "Refresh list");
-        waitById(WAIT_TIME, bottomBar.get(0));
+        waitById(bottomBarId);
         swipe(0.50, 0.30, 0.50, 0.80);
     }
 }

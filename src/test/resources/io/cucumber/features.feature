@@ -14,6 +14,7 @@ Feature: App updated
     And passcode is set
     And app is reinstalled
     Then passcode view is displayed
+    And list of files is displayed
     And the following items should be displayed
       | Pictures  |
       | Documents |
