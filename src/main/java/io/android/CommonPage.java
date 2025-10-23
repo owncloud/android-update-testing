@@ -145,6 +145,7 @@ public class CommonPage {
                 new AndroidStartScreenRecordingOptions();
         androidStartScreenRecordingOptions.withBitRate(2000000);
         androidStartScreenRecordingOptions.withVideoSize("360x640");
+        androidStartScreenRecordingOptions.enableBugReport();
         driver.startRecordingScreen(androidStartScreenRecordingOptions);
     }
 

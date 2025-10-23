@@ -69,7 +69,6 @@ public class FilelistPage extends CommonPage {
     public boolean isViewVisible() {
         Log.log(Level.FINE, "Starts: Check if file list view is visible");
         waitById(fabId);
-        waitById(recyclerViewId);
         return !toolbar.isEmpty() && !bottomBar.isEmpty();
     }
 

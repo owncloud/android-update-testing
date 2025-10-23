@@ -11,8 +11,8 @@ import utils.log.Log;
 
 public class PasscodePage extends CommonPage {
 
-    @AndroidFindBy(id = "com.owncloud.android:id/passcodeLockLayout")
-    private WebElement passcodeLayout;
+    @AndroidFindBy(id = "com.owncloud.android:id/title")
+    private WebElement title;
 
     @AndroidFindBy(id = "com.owncloud.android:id/key1Container")
     private WebElement key1;
@@ -60,11 +60,14 @@ public class PasscodePage extends CommonPage {
 
     public boolean isPasscodeVisible() {
         Log.log(Level.FINE, "Starts: Check if passcode view is visible");
-        return passcodeLayout.isDisplayed();
+        // Get one key as representative of the keypad
+        return title.isDisplayed() && key1.isDisplayed();
     }
 
     public void enterPasscode (String char1, String char2, String char3, String char4) {
         Log.log(Level.FINE, "Starts: Enter Passcode: " + char1 + char2 + char3 + char4);
+        // Get one key as representative of the keypad
+        waitById("com.owncloud.android:id/key1Container");
         clickPasscodeChar(char1);
         clickPasscodeChar(char2);
         clickPasscodeChar(char3);
