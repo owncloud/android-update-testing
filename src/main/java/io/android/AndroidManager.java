@@ -22,7 +22,7 @@ public class AndroidManager {
     private static File app;
     private static final String driverURL = LocProperties.getProperties().getProperty("appiumURL");
     private static final String appPackage = LocProperties.getProperties().getProperty("appPackage");
-    private static final long IMPLICIT_WAIT = 60;
+    private static final long IMPLICIT_WAIT = 20;
 
     private AndroidManager() {
     }
