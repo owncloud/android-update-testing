@@ -1,0 +1,241 @@
+name: Update Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - develop
+
+
+permissions:
+  # Only need read access to repository contents
+  contents: read
+  actions: write
+
+jobs:
+  build_and_test:
+    # Job to build APKs for the latest commit and the commit that triggered the workflow
+    name: Build and Test
+    runs-on: ubuntu-latest
+   
+    env:
+      BUILD_TOOLS_VERSION: "34.0.0"
+
+    steps:
+
+      # Clone repository containing update tests
+      - name: Clone app repo
+        run: git clone --depth 1 https://github.com/owncloud/android.git app
+
+      # Save the app commit has in a variable to check later
+      - name: Get commit hash of app's master
+        working-directory: app
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          echo "Commit hash: $COMMIT_HASH"
+          echo "APP_COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      # Set up Java JDK required for Gradle
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Set up Android SDK and build tools
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # Cache Gradle dependencies to speed up builds
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/build-cache-1
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Build the APK
+      - name: Build APK
+        working-directory: app
+        run: ./gradlew assembleqaRelease --no-daemon --stacktrace --parallel --build-cache --warn
+
+      # Copy the built APK to a commit-specific name
+      - name: Get apk
+        run: cp app/owncloudApp/build/outputs/apk/qa/release/owncloud_*-qa-release*.apk owncloud-${{ env.APP_COMMIT_HASH }}.apk
+
+      # Decode keystore from secret for signing
+      - name: Restore keystore
+        env:
+          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+        run: |
+          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
+
+      # Align and sign the APK
+      - name: Sign APK
+        shell: bash
+        env:
+          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+        run: |
+          APK_INPUT="owncloud-${{ env.APP_COMMIT_HASH }}.apk"
+          APK_ALIGNED="owncloud-${{ env.APP_COMMIT_HASH }}-aligned.apk"
+          APK_SIGNED="owncloudSigned-${{ env.APP_COMMIT_HASH }}.apk"
+          KEYSTORE="./test.keystore"
+
+          # Align APK for optimal performance
+          echo "Aligning APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
+
+          # Sign APK using keystore
+          echo "Signing APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
+            --ks "$KEYSTORE" \
+            --ks-pass pass:"$KEY_PASSWORD" \
+            --key-pass pass:"$KEY_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-type PKCS12 \
+            --out "$APK_SIGNED" \
+            "$APK_ALIGNED"
+
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
+
+          echo "Signed APK: $APK_SIGNED"
+
+          # Clean up temporary files
+          rm -f "$APK_ALIGNED"
+          rm -f ./test.keystore
+
+      # Upload the signed APK as an artifact
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: owncloudSigned-${{ env.APP_COMMIT_HASH }}
+          path: ./owncloudSigned-${{ env.APP_COMMIT_HASH }}.apk
+          retention-days: 2
+
+      # Clean up the workspace
+      - name: Clean up
+        run: |
+          rm -rf app
+
+      # Checkout the specific commit
+      - name: Checkout specific commit
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      # Download APK built last latest signing
+      - name: Download latest signed APK
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          workflow: build-apk-from-latest.yml
+          name: owncloudSigned-latest
+          workflow_conclusion: success
+          path: ./src/test/resources
+
+      # Download APK built from current commit
+      - name: Get apk built from current
+        uses: actions/download-artifact@v6
+        with:
+          name: owncloudSigned-${{ env.APP_COMMIT_HASH }}
+          path: ./src/test/resources
+
+      # Rename APKs to standard names expected by tests
+      - name: Rename artifacts
+        run: |
+          ls -al ./src/test/resources
+          mv ./src/test/resources/owncloudSigned-latest.apk ./src/test/resources/owncloudSigned1.apk
+          mv ./src/test/resources/owncloudSigned-${{ env.APP_COMMIT_HASH }}.apk ./src/test/resources/owncloudSigned2.apk
+          ls -al ./src/test/resources
+
+      # Start Appium server
+      - name: Start Appium
+        run: |
+          mkdir -p logs video
+          chmod +x ./runAppium.sh
+          ./runAppium.sh
+
+      # Enable KVM for emulator acceleration
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Run tests over emulator and catch crash logs
+      - name: Run Emulator & Execute tests
+        uses: reactivecircus/android-emulator-runner@v2
+        id: execution
+        env:
+          URL: ${{ secrets.OC_SERVER_URL }}
+          USER: ${{ secrets.OC_SERVER_USERNAME_TEST }}
+          PWD: ${{ secrets.OC_SERVER_PASSWORD_TEST }}
+          SHORT_HASH: ${{ env.APP_COMMIT_HASH }}
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          avd-name: test-avd
+          force-avd-creation: true
+          disable-animations: true
+          emulator-options: -no-snapshot -no-window -no-audio -no-boot-anim -accel on -memory 4096
+          script: |
+            SHORT_HASH=${SHORT_HASH:0:7}
+            # To catch only crashes in background
+            adb logcat -b crash *:E > crash_log.txt 2>&1 &
+            LOGCAT_PID=$!
+            ./gradlew --no-daemon clean test -Dserver="$URL" -Dusername="$USER" -Dpassword="$PWD" -Dcommit="$SHORT_HASH"
+            # Kill logcat to serve crash_log.txt
+            kill $LOGCAT_PID || true
+
+      # If crash happened, upload crash log
+      - name: Upload crash log artifact
+        if: always() && hashFiles('crash_log.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-log
+          path: crash_log.txt
+
+      # Prepare crash log file to be uploaded
+      - name: Rename log file
+        if: always()
+        run: |
+          cp logs/*.log logs/log.log || true
+
+      # Upload log file
+      - name: Upload Execution Log
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: logs
+          path: ./logs/log.log
+
+      # Upload appium log
+      - name: Upload Appium Log
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: appium
+          path: ./appium.log
+
+      # Prepare video file to be uploaded by compressing it
+      - name: Zip video files
+        if: always()
+        run: zip -r -9 test-recording.zip video || true
+
+      # Upload video file
+      - name: Upload Video
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: video-recording
+          path: ./test-recording.zip
+
