@@ -169,6 +169,14 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Shorten the commit hash to use to compare in the UI
+      - name: Get short commit hash
+        shell: bash
+        run: |
+          SHORT_HASH=${GITHUB_SHA:0:7}
+          echo Hash sorthened: $SHORT_HASH
+          echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
+
       # Run tests over emulator and catch crash logs
       - name: Run Emulator & Execute tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -188,7 +196,6 @@ jobs:
           disable-animations: true
           emulator-options: -no-snapshot -no-window -no-audio -no-boot-anim -accel on -memory 4096
           script: |
-            SHORT_HASH=${SHORT_HASH:0:7}
             # To catch only crashes in background
             adb logcat -b crash *:E > crash_log.txt 2>&1 &
             LOGCAT_PID=$!
