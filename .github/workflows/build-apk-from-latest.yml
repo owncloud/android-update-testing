@@ -6,8 +6,8 @@ on:
     tags:
       - 'v*.*.*'
   schedule:
-    # Runs Saturdays 21:00 UTC
-    - cron: "0 21 * * 7"
+    # Runs Sundays 21:00 UTC
+    - cron: "0 21 * * 0"
 
 permissions:
   # Only need read access to repository contents
