@@ -193,7 +193,7 @@ jobs:
         env:
           URL: ${{ secrets.OC_SERVER_URL }}
           USER: ${{ secrets.OC_SERVER_USERNAME_TEST }}
-          PWD: ${{ secrets.OC_SERVER_PASSWORD_TEST }}
+          PASSWORD: ${{ secrets.OC_SERVER_PASSWORD_TEST }}
           SHORT_HASH: ${{ env.SHORT_HASH }}
         with:
           api-level: 31
@@ -208,7 +208,7 @@ jobs:
             # To catch only crashes in background
             adb logcat -b crash *:E > crash_log.txt 2>&1 &
             LOGCAT_PID=$!
-            ./gradlew --no-daemon clean test -Dserver="$URL" -Dusername="$USER" -Dpassword="$PWD" -Dcommit="$SHORT_HASH"
+            ./gradlew --no-daemon clean test -Dserver="$URL" -Dusername="$USER" -Dpassword="$PASSWORD" -Dcommit="$SHORT_HASH"
             # Kill logcat to serve crash_log.txt
             kill $LOGCAT_PID || true
 
