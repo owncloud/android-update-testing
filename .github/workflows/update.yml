@@ -137,8 +137,6 @@ jobs:
           git rev-parse --abbrev-ref HEAD
           git rev-parse HEAD
           echo "======================================"
-          ls -al
-          cat ./src/main/java/utils/api/CommonAPI.java
 
       # Download APK built last latest signing
       - name: Download latest signed APK
@@ -182,8 +180,8 @@ jobs:
       - name: Get short commit hash
         shell: bash
         run: |
-          SHORT_HASH=${GITHUB_SHA:0:7}
-          echo Hash sorthened: $SHORT_HASH
+          SHORT_HASH=${APP_COMMIT_HASH:0:7}
+          echo Hash shortened: $SHORT_HASH
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
 
       # Run tests over emulator and catch crash logs
