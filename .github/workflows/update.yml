@@ -123,13 +123,22 @@ jobs:
       # Clean up the workspace
       - name: Clean up
         run: |
-          rm -rf app
+          rm -rf ${{ github.workspace }}/*
+          rm -rf ${{ github.workspace }}/.[!.]*
+          rm -rf ${{ github.workspace }}/..?*
 
       # Checkout the specific commit
       - name: Checkout specific commit
         uses: actions/checkout@v5
-        with:
-          ref: main
+
+      - name: Show current branch and commit
+        run: |
+          echo "=== Current branch and commit info ==="
+          git rev-parse --abbrev-ref HEAD
+          git rev-parse HEAD
+          echo "======================================"
+          ls -al
+          cat ./src/main/java/utils/api/CommonAPI.java
 
       # Download APK built last latest signing
       - name: Download latest signed APK
@@ -185,7 +194,7 @@ jobs:
           URL: ${{ secrets.OC_SERVER_URL }}
           USER: ${{ secrets.OC_SERVER_USERNAME_TEST }}
           PWD: ${{ secrets.OC_SERVER_PASSWORD_TEST }}
-          SHORT_HASH: ${{ env.APP_COMMIT_HASH }}
+          SHORT_HASH: ${{ env.SHORT_HASH }}
         with:
           api-level: 31
           target: google_apis
