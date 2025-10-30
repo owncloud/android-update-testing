@@ -129,9 +129,11 @@ public class CommonAPI {
     private String getPersonalDrives(String url, String userName) throws IOException {
         Log.log(Level.FINE, "Starts: Call get personal ID: " + url);
         Request request = getRequest(url + graphDrivesEndpoint);
+        Log.log(Level.FINE, "Request: " + request.toString());
         Response response = httpClient.newCall(request).execute();
         String body = response.body().string();
         response.close();
+        Log.log(Level.FINE, "Body from me endpoint: " + body);
         String personalId = DrivesJSONHandler.getPersonalDriveId(body);
         Log.log(Level.FINE, "Personal Drive ID: " + personalId);
         return personalId;

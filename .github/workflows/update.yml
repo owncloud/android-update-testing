@@ -64,7 +64,7 @@ jobs:
       # Build the APK
       - name: Build APK
         working-directory: app
-        run: ./gradlew assembleqaRelease --no-daemon --stacktrace --parallel --build-cache --warn
+        run: ./gradlew assembleqaRelease --no-daemon --stacktrace --warn
 
       # Copy the built APK to a commit-specific name
       - name: Get apk
