@@ -52,10 +52,32 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            ~/.gradle/build-cache-1
+            ~/.gradle/build-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      # Cache Android SDK
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.android/adb*
+            ~/.android/cache
+            ~/.android/sdk
+            ~/.android/build-tools
+          key: ${{ runner.os }}-androidsdk-${{ hashFiles('**/build.gradle*') }}
+          restore-keys: ${{ runner.os }}-androidsdk-
+
+      # Cache Emulator AVD
+      - name: Cache Emulator AVD
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/avd
+          key: ${{ runner.os }}-avd-api31-google_apis
+          restore-keys: ${{ runner.os }}-avd-
+          # Light compression in cache
+          compression-level: 1
 
       # Build the APK
       - name: Build APK
