@@ -76,8 +76,6 @@ jobs:
           path: ~/.android/avd
           key: ${{ runner.os }}-avd-api31-google_apis
           restore-keys: ${{ runner.os }}-avd-
-          # Light compression in cache
-          compression-level: 1
 
       # Build the APK
       - name: Build APK
