@@ -32,8 +32,8 @@ public class FilelistPage extends CommonPage {
 
     public static FilelistPage instance;
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
-    private final String recyclerViewId = "com.owncloud.android:id/recyclerView_main_file_list";
     private final String bottomBarId = "com.owncloud.android:id/bottom_nav_view";
+    private final String syncoption_id = "com.owncloud.android:id/action_sync_file";
 
     @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Back\"]")
     private WebElement back;
@@ -82,6 +82,10 @@ public class FilelistPage extends CommonPage {
     }
 
     public void openMenuActions(String operation) {
+        if (operation.equals("Download")){
+            findId(syncoption_id).click();
+            return;
+        }
         findUIAutomatorDescription("More options").click();
         findListUIAutomatorText(operation).get(0).click();
     }

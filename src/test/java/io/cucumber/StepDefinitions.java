@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.ParameterType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -24,6 +25,11 @@ public class StepDefinitions {
     private final String serverURL = System.getProperty("server");
     private final String userName = System.getProperty("username");
     private final String password = System.getProperty("password");
+
+    @ParameterType("file|folder")
+    public String fileType(String type) {
+        return type;
+    }
 
     public StepDefinitions(World world) {
         this.world = world;
@@ -86,17 +92,23 @@ public class StepDefinitions {
         assertTrue(world.filelistPage.isViewVisible());
     }
 
-    @When("file {word} is {word}")
-    public void fileIsDownloaded(String fileName, String operation) throws InterruptedException {
+    @When("{fileType} {word} is {word}")
+    public void fileIsDownloaded(String type, String itemName, String operation) {
         StepLogger.logCurrentStep(Level.FINE);
         switch (operation) {
             case "downloaded" -> {
-                world.filelistPage.download(fileName);
-                assertTrue(world.filelistPage.isItemPreviewed());
-                world.filelistPage.backListFiles();
+                if (type.equals("file")) {
+                    world.filelistPage.download(itemName);
+                    assertTrue(world.filelistPage.isItemPreviewed());
+                    world.filelistPage.backListFiles();
+                } else if (type.equals("folder")) { //sync
+                    world.filelistPage.longPress(itemName);
+                    world.filelistPage.openMenuActions("Download");
+                    world.filelistPage.closeSelectionMode();
+                }
             }
             case "av.offline" -> {
-                world.filelistPage.longPress(fileName);
+                world.filelistPage.longPress(itemName);
                 world.filelistPage.openMenuActions("Set as available offline");
                 world.filelistPage.closeSelectionMode();
             }
@@ -121,12 +133,27 @@ public class StepDefinitions {
         }
     }
 
-    @Then("the following items should be downloaded")
+    @Then("the following files should be downloaded")
     public void theFollowingItemsShouldBeDownloaded(DataTable table) throws IOException {
         StepLogger.logCurrentStep(Level.FINE);
         String folderId = world.graphAPI.getPersonal().getId().replace("$", "\\$");
         Log.log(Level.FINE, "Folder id: " + folderId);
         String listFiles = world.filelistPage.pullList(folderId);
+        Log.log(Level.FINE, "Pulled list " + listFiles.replace("\n", " "));
+        List<List<String>> listItems = table.asLists();
+        for (List<String> rows : listItems) {
+            String itemName = rows.get(0);
+            Log.log(Level.FINE, "Checking itemName: " + itemName);
+            assertTrue(listFiles.contains(itemName));
+        }
+    }
+
+    @Then("the folder {word} should contain the following downloaded files")
+    public void theFolderShouldContainTheFollowingFiles(String folder, DataTable table) throws IOException {
+        StepLogger.logCurrentStep(Level.FINE);
+        String folderId = world.graphAPI.getPersonal().getId().replace("$", "\\$");
+        Log.log(Level.FINE, "Folder id: " + folderId);
+        String listFiles = world.filelistPage.pullList(folderId + "/" + folder);
         Log.log(Level.FINE, "Pulled list " + listFiles.replace("\n", " "));
         List<List<String>> listItems = table.asLists();
         for (List<String> rows : listItems) {
