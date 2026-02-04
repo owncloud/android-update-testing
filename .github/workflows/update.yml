@@ -12,6 +12,17 @@ permissions:
 
 jobs:
 
+  create_ocis:
+    uses: ./.github/workflows/ocisbackend.yml
+    with:
+      ocis_version: ${{ vars.OCIS_VERSION }}
+    secrets:
+      ocis_url: ${{ secrets.OC_SERVER_URL }}
+      ssh_host: ${{ secrets.SSH_HOST }}
+      ssh_user: ${{ secrets.SSH_USER }}
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      ocis_pwd: ${{ secrets.OCIS_PWD }}
+
   build_apk:
     uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
@@ -21,7 +32,9 @@ jobs:
   update_test:
     name: Update test
     runs-on: ubuntu-latest
-    needs: build_apk
+    needs:
+      - build_apk
+      - create_ocis
    
     env:
       BUILD_TOOLS_VERSION: "34.0.0"
@@ -210,3 +223,13 @@ jobs:
         with:
           name: video-recording
           path: ./test-recording.zip
+
+  cleanup:
+    needs:
+      - update_test
+    if: always()
+    uses: ./.github/workflows/cleanup.yml
+    secrets:
+      ssh_host: ${{ secrets.SSH_HOST }}
+      ssh_user: ${{ secrets.SSH_USER }}
+      ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
