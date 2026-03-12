@@ -30,7 +30,7 @@ jobs:
 
     # Download the APK artifact published by build job
     - name: Download APK artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: ${{ needs.build_apk.outputs.artifact_name }}
         path: ./
@@ -79,7 +79,7 @@ jobs:
 
     # Upload the signed APK as an artifact
     - name: Upload APK as artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: owncloudSigned-latest
         path: ./owncloudSigned-latest.apk
