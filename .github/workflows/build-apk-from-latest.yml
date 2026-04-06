@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build_apk:
-    uses: owncloud/android/.github/workflows/build-apk.yml@master
+    uses: owncloud/android/.github/workflows/build-apk.yml@fix/changes_ci_security
     with:
       build_variant: qaRelease
       version: ${{ github.event.ref_name || 'latest' }}
@@ -30,7 +30,7 @@ jobs:
 
     # Download the APK artifact published by build job
     - name: Download APK artifact
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         name: ${{ needs.build_apk.outputs.artifact_name }}
         path: ./
@@ -79,7 +79,7 @@ jobs:
 
     # Upload the signed APK as an artifact
     - name: Upload APK as artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
       with:
         name: owncloudSigned-latest
         path: ./owncloudSigned-latest.apk

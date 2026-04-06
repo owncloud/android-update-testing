@@ -24,7 +24,7 @@ jobs:
       ocis_pwd: ${{ secrets.OCIS_PWD }}
 
   build_apk:
-    uses: owncloud/android/.github/workflows/build-apk.yml@master
+    uses: owncloud/android/.github/workflows/build-apk.yml@fix/changes_ci_security
     with:
       build_variant: qaRelease
       version: master
@@ -42,7 +42,7 @@ jobs:
     steps:
       # Checkout repo
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Show current branch and commit
         run: |
@@ -53,7 +53,7 @@ jobs:
 
       # Download the APK artifact published by build_apk job
       - name: Download APK artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: ${{ needs.build_apk.outputs.artifact_name }}
           path: ./
@@ -105,7 +105,7 @@ jobs:
 
       # Upload the signed APK as an artifact
       - name: Upload APK as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: owncloudSigned-master
           path: ./owncloudSigned-master.apk
@@ -117,7 +117,7 @@ jobs:
 
       # Download the latest successfully signed APK from the reference workflow
       - name: Download latest signed APK
-        uses: dawidd6/action-download-artifact@v17
+        uses: dawidd6/action-download-artifact@8305c0f1062bb0d184d09ef4493ecb9288447732 #v20
         with:
           workflow: build-apk-from-latest.yml
           name: owncloudSigned-latest
@@ -157,7 +157,7 @@ jobs:
 
       # Run tests over emulator and catch crash logs
       - name: Run Emulator & Execute tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@4fe4b1ae376568ff65de774de6c0ca8070944022
         id: execution
         env:
           URL: ${{ secrets.OC_SERVER_URL }}
@@ -184,7 +184,7 @@ jobs:
       # If crash happened, upload crash log
       - name: Upload crash log artifact
         if: always() && hashFiles('crash_log.txt') != ''
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: crash-log
           path: crash_log.txt
@@ -198,7 +198,7 @@ jobs:
       # Upload log file
       - name: Upload Execution Log
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: logs
           path: ./logs/log.log
@@ -206,7 +206,7 @@ jobs:
       # Upload appium log
       - name: Upload Appium Log
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: appium
           path: ./appium.log
@@ -219,7 +219,7 @@ jobs:
       # Upload video file
       - name: Upload Video
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: video-recording
           path: ./test-recording.zip
