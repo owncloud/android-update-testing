@@ -23,19 +23,142 @@ jobs:
       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
       ocis_pwd: ${{ secrets.OCIS_PWD }}
 
-  build_apk:
-    uses: owncloud/android/.github/workflows/build-apk.yml@fix/changes_ci_security
+  build_apk_latest:
+    uses: owncloud/android/.github/workflows/build-apk.yml@master
+    with:
+      build_variant: qaRelease
+      version: latest
+
+  build_apk_master:
+    uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
       version: master
+
+  sign_latest:
+    name: Align and sign latest APK
+    runs-on: ubuntu-latest
+    needs:
+      - build_apk_latest
+    env:
+      BUILD_TOOLS_VERSION: "34.0.0"
+
+    steps:
+      - name: Download latest APK artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.build_apk_latest.outputs.artifact_name }}
+          path: ./
+
+      - name: Move latest APK to root directory
+        run: cp ./${{ needs.build_apk_latest.outputs.artifact_name }} ./owncloud-latest.apk
+
+      - name: Restore keystore
+        run: |
+          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
+
+      - name: Align and sign latest APK
+        shell: bash
+        env:
+          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+        run: |
+          APK_INPUT="owncloud-latest.apk"
+          APK_ALIGNED="owncloud-latest-aligned.apk"
+          APK_SIGNED="owncloudSigned-latest.apk"
+          KEYSTORE="./test.keystore"
+
+          echo "Aligning APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
+
+          echo "Signing APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
+            --ks "$KEYSTORE" \
+            --ks-pass pass:"$KEY_PASSWORD" \
+            --key-pass pass:"$KEY_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-type PKCS12 \
+            --out "$APK_SIGNED" \
+            "$APK_ALIGNED"
+
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
+
+          rm -f "$APK_ALIGNED"
+          rm -f ./test.keystore
+
+      - name: Upload signed latest APK
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: owncloudSigned-latest
+          path: ./owncloudSigned-latest.apk
+          retention-days: 2
+
+  sign_master:
+    name: Align and sign master APK
+    runs-on: ubuntu-latest
+    needs:
+      - build_apk_master
+    env:
+      BUILD_TOOLS_VERSION: "34.0.0"
+
+    steps:
+      - name: Download master APK artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.build_apk_master.outputs.artifact_name }}
+          path: ./
+
+      - name: Move master APK to root directory
+        run: cp ./${{ needs.build_apk_master.outputs.artifact_name }} ./owncloud-master.apk
+
+      - name: Restore keystore
+        run: |
+          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
+
+      - name: Align and sign master APK
+        shell: bash
+        env:
+          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+        run: |
+          APK_INPUT="owncloud-master.apk"
+          APK_ALIGNED="owncloud-master-aligned.apk"
+          APK_SIGNED="owncloudSigned-master.apk"
+          KEYSTORE="./test.keystore"
+
+          echo "Aligning APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
+
+          echo "Signing APK..."
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
+            --ks "$KEYSTORE" \
+            --ks-pass pass:"$KEY_PASSWORD" \
+            --key-pass pass:"$KEY_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-type PKCS12 \
+            --out "$APK_SIGNED" \
+            "$APK_ALIGNED"
+
+          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
+
+          rm -f "$APK_ALIGNED"
+          rm -f ./test.keystore
+
+      - name: Upload signed master APK
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: owncloudSigned-master
+          path: ./owncloudSigned-master.apk
+          retention-days: 2
 
   update_test:
     name: Update test
     runs-on: ubuntu-latest
     needs:
-      - build_apk
+      - sign_latest
+      - sign_master
       - create_ocis
-   
+
     env:
       BUILD_TOOLS_VERSION: "34.0.0"
 
@@ -51,85 +174,26 @@ jobs:
           git rev-parse HEAD
           echo "======================================"
 
-      # Download the APK artifact published by build_apk job
-      - name: Download APK artifact
+      # Download the APK artifact published by sign_latest job
+      - name: Download signed APK from latest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: ${{ needs.build_apk.outputs.artifact_name }}
+          name: owncloudSigned-latest
           path: ./
 
-      # Move apk to root, making it easier to access
-      - name: Copy APK to root directory
-        run: cp ./${{ needs.build_apk.outputs.artifact_name }} ./owncloud-master.apk
-
-      - name: Restore keystore
-        env:
-          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
-        run: |
-          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
-
-      # Align and sign the APK
-      - name: Sign APK
-        shell: bash
-        env:
-          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
-        run: |
-          APK_INPUT="owncloud-master.apk"
-          APK_ALIGNED="owncloud-master-aligned.apk"
-          APK_SIGNED="owncloudSigned-master.apk"
-          KEYSTORE="./test.keystore"
-
-          # Align APK for optimal performance
-          echo "Aligning APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
-
-          # Sign APK using keystore
-          echo "Signing APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
-            --ks "$KEYSTORE" \
-            --ks-pass pass:"$KEY_PASSWORD" \
-            --key-pass pass:"$KEY_PASSWORD" \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-type PKCS12 \
-            --out "$APK_SIGNED" \
-            "$APK_ALIGNED"
-
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
-
-          echo "Signed APK: $APK_SIGNED"
-
-          # Clean up temporary files
-          rm -f "$APK_ALIGNED"
-          rm -f ./test.keystore
-
-      # Upload the signed APK as an artifact
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+      # Download the APK artifact published by sign_master job
+      - name: Download signed APK from master
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: owncloudSigned-master
-          path: ./owncloudSigned-master.apk
-          retention-days: 2
+          path: ./
 
-      # Move apk to test folder, making it easier to access
-      - name: Copy APK to test resources
-        run: cp ./owncloudSigned-master.apk ./src/test/resources/
-
-      # Download the latest successfully signed APK from the reference workflow
-      - name: Download latest signed APK
-        uses: dawidd6/action-download-artifact@8305c0f1062bb0d184d09ef4493ecb9288447732 #v20
-        with:
-          workflow: build-apk-from-latest.yml
-          name: owncloudSigned-latest
-          workflow_conclusion: success
-          path: ./src/test/resources
-
-      # Rename APKs to standard names expected by tests
-      - name: Rename artifacts
+      # Move apk to resources folder
+      - name: Move and rename APKs to resources directory
         run: |
-          ls -al ./src/test/resources
-          mv ./src/test/resources/owncloudSigned-latest.apk ./src/test/resources/owncloudSigned1.apk
-          mv ./src/test/resources/owncloudSigned-master.apk ./src/test/resources/owncloudSigned2.apk
+          ls -al .
+          mv ./owncloudSigned-latest.apk ./src/test/resources/owncloudSignedLatest.apk
+          mv ./owncloudSigned-master.apk ./src/test/resources/owncloudSignedMaster.apk
           ls -al ./src/test/resources
 
       # Start Appium server
@@ -157,7 +221,7 @@ jobs:
 
       # Run tests over emulator and catch crash logs
       - name: Run Emulator & Execute tests
-        uses: reactivecircus/android-emulator-runner@4fe4b1ae376568ff65de774de6c0ca8070944022
+        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a
         id: execution
         env:
           URL: ${{ secrets.OC_SERVER_URL }}

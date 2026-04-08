@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build_apk:
-    uses: owncloud/android/.github/workflows/build-apk.yml@fix/changes_ci_security
+    uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
       version: ${{ github.event.ref_name || 'latest' }}
