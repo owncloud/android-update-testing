@@ -1,0 +1,77 @@
+name: Sign APK
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "APK version to sign"
+        required: true
+        type: string
+      unsigned_artifact_name:
+        description: "Artifact name produced by the build job"
+        required: true
+        type: string
+    secrets:
+      TEST_KS_B64:
+        required: true
+      TEST_KS_ALIAS:
+        required: true
+      TEST_KS_KEY:
+        required: true
+
+jobs:
+  sign:
+    name: Align and sign ${{ inputs.version }} APK
+    runs-on: ubuntu-latest
+    env:
+      BUILD_TOOLS_VERSION: "34.0.0"
+
+    steps:
+      - name: Download unsigned APK artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ inputs.unsigned_artifact_name }}
+          path: ./
+
+      - name: Move APK to root directory
+        run: cp ./${{ inputs.unsigned_artifact_name }} ./owncloud-${{ inputs.version }}.apk
+
+      - name: Restore keystore
+        run: |
+          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
+
+      - name: Align and sign APK
+        shell: bash
+        env:
+          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+        run: |
+          APK_INPUT="owncloud-${{ inputs.version }}.apk"
+          APK_ALIGNED="owncloud-${{ inputs.version }}-aligned.apk"
+          APK_SIGNED="owncloudSigned-${{ inputs.version }}.apk"
+          KEYSTORE="./test.keystore"
+
+          echo "Aligning APK..."
+          $ANDROID_SDK_ROOT/build-tools/${BUILD_TOOLS_VERSION}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
+
+          echo "Signing APK..."
+          $ANDROID_SDK_ROOT/build-tools/${BUILD_TOOLS_VERSION}/apksigner sign \
+            --ks "$KEYSTORE" \
+            --ks-pass pass:"$KEY_PASSWORD" \
+            --key-pass pass:"$KEY_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-type PKCS12 \
+            --out "$APK_SIGNED" \
+            "$APK_ALIGNED"
+
+          $ANDROID_SDK_ROOT/build-tools/${BUILD_TOOLS_VERSION}/apksigner verify "$APK_SIGNED"
+
+          rm -f "$APK_ALIGNED"
+          rm -f ./test.keystore
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: owncloudSigned-${{ inputs.version }}
+          path: ./owncloudSigned-${{ inputs.version }}.apk
+          retention-days: 2

@@ -36,120 +36,24 @@ jobs:
       version: master
 
   sign_latest:
-    name: Align and sign latest APK
-    runs-on: ubuntu-latest
+    name: Sign latest APK
     needs:
       - build_apk_latest
-    env:
-      BUILD_TOOLS_VERSION: "34.0.0"
-
-    steps:
-      - name: Download latest APK artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          name: ${{ needs.build_apk_latest.outputs.artifact_name }}
-          path: ./
-
-      - name: Move latest APK to root directory
-        run: cp ./${{ needs.build_apk_latest.outputs.artifact_name }} ./owncloud-latest.apk
-
-      - name: Restore keystore
-        run: |
-          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
-
-      - name: Align and sign latest APK
-        shell: bash
-        env:
-          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
-        run: |
-          APK_INPUT="owncloud-latest.apk"
-          APK_ALIGNED="owncloud-latest-aligned.apk"
-          APK_SIGNED="owncloudSigned-latest.apk"
-          KEYSTORE="./test.keystore"
-
-          echo "Aligning APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
-
-          echo "Signing APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
-            --ks "$KEYSTORE" \
-            --ks-pass pass:"$KEY_PASSWORD" \
-            --key-pass pass:"$KEY_PASSWORD" \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-type PKCS12 \
-            --out "$APK_SIGNED" \
-            "$APK_ALIGNED"
-
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
-
-          rm -f "$APK_ALIGNED"
-          rm -f ./test.keystore
-
-      - name: Upload signed latest APK
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: owncloudSigned-latest
-          path: ./owncloudSigned-latest.apk
-          retention-days: 2
+    uses: ./.github/workflows/sign-apk.yml
+    with:
+      version: latest
+      unsigned_artifact_name: ${{ needs.build_apk_latest.outputs.artifact_name }}
+    secrets: inherit
 
   sign_master:
-    name: Align and sign master APK
-    runs-on: ubuntu-latest
+    name: Sign master APK
     needs:
       - build_apk_master
-    env:
-      BUILD_TOOLS_VERSION: "34.0.0"
-
-    steps:
-      - name: Download master APK artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          name: ${{ needs.build_apk_master.outputs.artifact_name }}
-          path: ./
-
-      - name: Move master APK to root directory
-        run: cp ./${{ needs.build_apk_master.outputs.artifact_name }} ./owncloud-master.apk
-
-      - name: Restore keystore
-        run: |
-          echo "${{ secrets.TEST_KS_B64 }}" | base64 -d > ./test.keystore
-
-      - name: Align and sign master APK
-        shell: bash
-        env:
-          KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
-        run: |
-          APK_INPUT="owncloud-master.apk"
-          APK_ALIGNED="owncloud-master-aligned.apk"
-          APK_SIGNED="owncloudSigned-master.apk"
-          KEYSTORE="./test.keystore"
-
-          echo "Aligning APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/zipalign -v -p 4 "$APK_INPUT" "$APK_ALIGNED"
-
-          echo "Signing APK..."
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner sign \
-            --ks "$KEYSTORE" \
-            --ks-pass pass:"$KEY_PASSWORD" \
-            --key-pass pass:"$KEY_PASSWORD" \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-type PKCS12 \
-            --out "$APK_SIGNED" \
-            "$APK_ALIGNED"
-
-          $ANDROID_SDK_ROOT/build-tools/${{ env.BUILD_TOOLS_VERSION }}/apksigner verify "$APK_SIGNED"
-
-          rm -f "$APK_ALIGNED"
-          rm -f ./test.keystore
-
-      - name: Upload signed master APK
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: owncloudSigned-master
-          path: ./owncloudSigned-master.apk
-          retention-days: 2
+    uses: ./.github/workflows/sign-apk.yml
+    with:
+      version: master
+      unsigned_artifact_name: ${{ needs.build_apk_master.outputs.artifact_name }}
+    secrets: inherit
 
   update_test:
     name: Update test
@@ -214,7 +118,7 @@ jobs:
       - name: Shorten the built commit hash
         shell: bash
         run: |
-          COMMIT_HASH="${{ needs.build_apk.outputs.commit_hash }}"
+          COMMIT_HASH="${{ needs.build_apk_master.outputs.commit_hash }}"
           SHORT_HASH=${COMMIT_HASH:0:7}
           echo Hash shortened: $SHORT_HASH
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
