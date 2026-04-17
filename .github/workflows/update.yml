@@ -59,6 +59,8 @@ jobs:
     name: Update test
     runs-on: ubuntu-latest
     needs:
+      - build_apk_master
+      - build_apk_latest
       - sign_latest
       - sign_master
       - create_ocis
