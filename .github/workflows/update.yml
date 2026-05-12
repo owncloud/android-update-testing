@@ -154,7 +154,7 @@ jobs:
       # If crash happened, upload crash log
       - name: Upload crash log artifact
         if: always() && hashFiles('crash_log.txt') != ''
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: crash-log
           path: crash_log.txt
@@ -168,7 +168,7 @@ jobs:
       # Upload log file
       - name: Upload Execution Log
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: logs
           path: ./logs/log.log
@@ -176,7 +176,7 @@ jobs:
       # Upload appium log
       - name: Upload Appium Log
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: appium
           path: ./appium.log
@@ -189,7 +189,7 @@ jobs:
       # Upload video file
       - name: Upload Video
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: video-recording
           path: ./test-recording.zip
