@@ -3,8 +3,8 @@ name: Update Test
 on:
   workflow_dispatch:
   schedule:
-    # Runs every work day at 01:00 UTC (02:00 Europe CET)
-    - cron: "0 1 * * 1,3,5"
+    # Runs every work day at 01:00 UTC, which is 02:00 CET / 03:00 CEST in Europe
+    - cron: "0 1 * * 1-5"
 
 permissions:
   # Only need read access to repository contents
@@ -12,7 +12,54 @@ permissions:
 
 jobs:
 
+  # Firstly, check if there were changes the day before. If not, aborting
+  check_repo_changes:
+    name: Check changes in Android app
+    runs-on: ubuntu-latest
+
+    outputs:
+      has_changes: ${{ steps.check.outputs.has_changes }}
+
+    steps:
+      - name: Checkout external repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          repository: owncloud/android
+          ref: master
+          fetch-depth: 0
+          path: android-repo
+
+      - name: Check commits from previous day
+        id: check
+        shell: bash
+        run: |
+
+          cd android-repo
+
+          export TZ="Europe/Madrid"
+          SINCE=$(date -d "yesterday" +"%Y-%m-%d 00:00:00")
+          UNTIL=$(date -d "today" +"%Y-%m-%d 00:00:00")
+
+          echo "Checking commits in external repo between:"
+          echo "SINCE=$SINCE"
+          echo "UNTIL=$UNTIL"
+
+          COMMITS=$(git rev-list --count --since="$SINCE" --until="$UNTIL" origin/master)
+
+          echo "Commits found: $COMMITS"
+
+          if [ "$COMMITS" -gt 0 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Creates oCIS server
   create_ocis:
+    name: Provision of oCIS server
+    needs:
+      - check_repo_changes
+    if: github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true'
     uses: ./.github/workflows/ocisbackend.yml
     with:
       ocis_version: ${{ vars.OCIS_VERSION }}
@@ -23,18 +70,29 @@ jobs:
       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
       ocis_pwd: ${{ secrets.OCIS_PWD }}
 
+  # Builds the apk to install from the "latest" tag (current stable)
   build_apk_latest:
+    name: Build latest APK
+    needs:
+      - check_repo_changes
+    if: github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true'
     uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
       version: latest
 
+  # Builds the apk to install from the current master
   build_apk_master:
+    name: Build master APK
+    needs:
+      - check_repo_changes
+    if: github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true'
     uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
       version: master
 
+  # Signs build from latest
   sign_latest:
     name: Sign latest APK
     needs:
@@ -45,6 +103,7 @@ jobs:
       unsigned_artifact_name: ${{ needs.build_apk_latest.outputs.artifact_name }}
     secrets: inherit
 
+  # Signs build from master
   sign_master:
     name: Sign master APK
     needs:
@@ -55,15 +114,15 @@ jobs:
       unsigned_artifact_name: ${{ needs.build_apk_master.outputs.artifact_name }}
     secrets: inherit
 
+  # Launches the test
   update_test:
     name: Update test
-    runs-on: ubuntu-latest
     needs:
       - build_apk_master
-      - build_apk_latest
       - sign_latest
       - sign_master
       - create_ocis
+    runs-on: ubuntu-latest
 
     env:
       BUILD_TOOLS_VERSION: "34.0.0"
@@ -194,10 +253,14 @@ jobs:
           name: video-recording
           path: ./test-recording.zip
 
+  # Cleans up the server
   cleanup:
+    name: Clean Up
     needs:
       - update_test
-    if: always()
+      - create_ocis
+      - check_repo_changes
+    if: always() && (github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true')
     uses: ./.github/workflows/cleanup.yml
     secrets:
       ssh_host: ${{ secrets.SSH_HOST }}
