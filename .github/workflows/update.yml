@@ -3,8 +3,8 @@ name: Update Test
 on:
   workflow_dispatch:
   schedule:
-    # Runs every work day at 01:00 UTC, which is 02:00 CET / 03:00 CEST in Europe
-    - cron: "0 1 * * 1-5"
+    # Runs from Tuesday to Fridat at 01:00 UTC, which is 02:00 CET / 03:00 CEST in Europe
+    - cron: "0 1 * * 2-5"
 
 permissions:
   # Only need read access to repository contents
