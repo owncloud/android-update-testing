@@ -116,7 +116,7 @@ public class StepDefinitions {
     }
 
     @When("app is reinstalled")
-    public void appIsReinstalled() {
+    public void appIsReinstalled() throws InterruptedException {
         StepLogger.logCurrentStep(Level.FINE);
         world.loginPage.reinstall();
     }

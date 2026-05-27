@@ -81,11 +81,13 @@ public class LoginPage extends CommonPage {
         }
     }
 
-    public void reinstall() {
+    public void reinstall() throws InterruptedException {
         File rootPath = new File(System.getProperty("user.dir"));
         File appDir = new File(rootPath, "src/test/resources");
         File app = new File(appDir,LocProperties.getProperties().getProperty("apk2update"));
         driver.installApp(app.getAbsolutePath());
+        // Ugly waiter, no other way to wait for the app to be installed and the system to be ready
+        Thread.sleep(3000);
         driver.activateApp(LocProperties.getProperties().getProperty("appPackage"));
         //Go to settings and check
     }
