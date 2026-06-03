@@ -1,42 +1,111 @@
-# Update Testing
+# Android Update Testing
 
-This project verifies that upgrading from an older version of the app to a newer one does not cause crashes or break functionality.
+<!-- OSPO-managed README | Generated: 2026-04-16 | v2 -->
 
-The tests in this repository are designed to run within a CI workflow that builds both the older and newer versions for every pull request.
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE) [![ownCloud OSPO](https://img.shields.io/badge/OSPO-ownCloud-blue)](https://kiteworks.com/opensource)
 
-## Setup
+[![Update Test](https://github.com/owncloud/android-update-testing/actions/workflows/update.yml/badge.svg)](https://github.com/owncloud/android-update-testing/actions/workflows/update.yml)
 
-In the `local.properties` file
+This repository provides automated tests that verify the ownCloud Android app upgrade path does not cause crashes or break functionality. The test suite installs the curren stable version of the app, performs setup operations (login, file listing, passcode setup), then installs a the current `master` version over the top and verifies that data and settings are preserved. It is designed to run within CI workflows that build both versions nightly.
 
-- Name of the file containing older and newer version. By default: `owncloudSigned1.apk` and `owncloudSigned2.apk`.
-- Passcode to set in the app (4 digits)
-- Package name
-- Appium URL
+## Part of Mobile (Android)
 
-## Execution
+This repository is part of the QA infrastructure for the [ownCloud Android app](https://github.com/owncloud/android). It ensures that app updates do not introduce crashes, regressions in user data or settings unconsistencies.
 
-The gradlew process launchs the tests with the following parameters:
+## Getting Started
+
+1. Configure `local.properties` with APK filenames, passcode, package name, and Appium URL
+2. Run the tests with Gradle:
+
+```bash
+./gradlew clean test -Dserver="https://myserver:9200" -Dusername=john -Dpassword=mypass -Dcommit=87a6f33
+```
 
 - Server URL: ownCloud server to test. Basic auth as 1st auth method.
 - Username: available in the server.
 - Password: for the username to access.
 - Commit: hash to compare against `latest` tag in CI.
 
-Command:
+### Test Process
 
-```
-./gradlew clean test -Dserver="https://myserver:9200" -Dusername=john -Dpassword=mypass -Dcommit=87a6f33
-```
+1. Adds example files to the given account
+2. Installs the stable version (`owncloudSignedLatest.apk`)
+3. Logs in with the given credentials
+4. Checks list of files and adds a passcode
+5. Installs the app's current `master` version (`owncloudSignedMaster.apk`) over the stable one (without reinstalling)
+6. Verifies the passcode, file list, and commit hash in settings
 
-## Process
+## Documentation
 
-1. Add some example files to the given account
-2. Install the older version `owncloudSigned1.apk`
-3. Log in by using the given credentials
-4. Check list of files
-5. Add a passcode to the app
-6. Install the newest version over the older (without reinstalling)
-7. Verifies the passcode, the list of files, and the commit hash
+- See this README for usage instructions
+- [ownCloud Android app](https://github.com/owncloud/android)
 
-(open to add more checks)
+## Community & Support
 
+**[Star](https://github.com/owncloud/android-update-testing)** this repo and **Watch** for release notifications!
+
+- [ownCloud Website](https://owncloud.com)
+- [Community Discussions](https://github.com/orgs/owncloud/discussions)
+- [Matrix Chat](https://app.element.io/#/room/#owncloud:matrix.org)
+- [Documentation](https://doc.owncloud.com)
+- [Enterprise Support](https://owncloud.com/contact-us/)
+- [OSPO Home](https://kiteworks.com/opensource)
+
+## Contributing
+
+We welcome contributions! Please read the [Contributing Guidelines](CONTRIBUTING.md)
+and our [Code of Conduct](CODE_OF_CONDUCT.md) before getting started.
+
+### Workflow
+
+- **Rebase Early, Rebase Often!** We use a rebase workflow. Always rebase on the target branch before submitting a PR.
+- **Dependabot**: Automated dependency updates are managed via Dependabot. Review and merge dependency PRs promptly.
+- **Signed Commits**: All commits **must** be PGP/GPG signed. See [GitHub's signing guide](https://docs.github.com/en/authentication/managing-commit-signature-verification).
+- **DCO Sign-off**: Every commit must carry a `Signed-off-by` line:
+  ```
+  git commit -s -S -m "your commit message"
+  ```
+- **GitHub Actions Policy**: Workflows may only use actions that are (a) owned by `owncloud`, (b) created by GitHub (`actions/*`), or (c) verified in the GitHub Marketplace.
+
+## Security
+
+**Do not open a public GitHub issue for security vulnerabilities.**
+
+Report vulnerabilities at **<https://security.owncloud.com>** -- see [SECURITY.md](SECURITY.md).
+
+Bug bounty: [YesWeHack ownCloud Program](https://yeswehack.com/programs/owncloud-bug-bounty-program)
+
+## License
+
+This project is licensed under the [GPL-3.0](LICENSE).
+
+## About the ownCloud OSPO
+
+The [Kiteworks Open Source Program Office](https://kiteworks.com/opensource), operating under
+the [ownCloud](https://owncloud.com) brand, launched on May 5, 2026, to steward the open source
+ecosystem around ownCloud's products. The OSPO ensures transparent governance, license compliance,
+community health, and sustainable collaboration between the open source community and
+[Kiteworks](https://www.kiteworks.com), which acquired ownCloud in 2023.
+
+- **OSPO Home**: <https://kiteworks.com/opensource>
+- **GitHub**: <https://github.com/owncloud>
+- **ownCloud**: <https://owncloud.com>
+
+For questions about the OSPO or licensing, contact ospo@kiteworks.com.
+
+### License Migration to Apache 2.0
+
+The OSPO is driving a strategic relicensing of ownCloud repositories toward the
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), following
+the [Apache Software Foundation's third-party license policy](https://www.apache.org/legal/resolved.html).
+
+Individual repositories will migrate as their audit is completed. The LICENSE file
+in each repo reflects its **current** license status (not the target).
+
+**Current license: GPL-3.0** (Category X per Apache policy -- cannot be included in Apache-2.0 works).
+
+Migration prerequisites for this repository:
+
+- **CLA/DCO coverage**: All past contributors must have signed agreements permitting relicensing
+- **Copyleft dependency audit**: All GPL dependencies must be replaced or isolated
+- **Complete relicensing**: GPL-3.0 is a strong copyleft license; migration requires full relicensing of all files
