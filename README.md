@@ -4,11 +4,13 @@
 
 [![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE) [![ownCloud OSPO](https://img.shields.io/badge/OSPO-ownCloud-blue)](https://kiteworks.com/opensource)
 
-This repository provides automated tests that verify the ownCloud Android app upgrade path does not cause crashes or break functionality. The test suite installs an older version of the app, performs setup operations (login, file listing, passcode setup), then installs a newer version over the top and verifies that data and settings are preserved. It is designed to run within CI workflows that build both versions for every pull request.
+[![Update Test](https://github.com/owncloud/android-update-testing/actions/workflows/update.yml/badge.svg)](https://github.com/owncloud/android-update-testing/actions/workflows/update.yml)
+
+This repository provides automated tests that verify the ownCloud Android app upgrade path does not cause crashes or break functionality. The test suite installs the curren stable version of the app, performs setup operations (login, file listing, passcode setup), then installs a the current `master` version over the top and verifies that data and settings are preserved. It is designed to run within CI workflows that build both versions nightly.
 
 ## Part of Mobile (Android)
 
-This repository is part of the QA infrastructure for the [ownCloud Android app](https://github.com/owncloud/android). It ensures that app updates do not introduce regressions in user data or settings persistence.
+This repository is part of the QA infrastructure for the [ownCloud Android app](https://github.com/owncloud/android). It ensures that app updates do not introduce crashes, regressions in user data or settings unconsistencies.
 
 ## Getting Started
 
@@ -19,14 +21,19 @@ This repository is part of the QA infrastructure for the [ownCloud Android app](
 ./gradlew clean test -Dserver="https://myserver:9200" -Dusername=john -Dpassword=mypass -Dcommit=87a6f33
 ```
 
+- Server URL: ownCloud server to test. Basic auth as 1st auth method.
+- Username: available in the server.
+- Password: for the username to access.
+- Commit: hash to compare against `latest` tag in CI.
+
 ### Test Process
 
 1. Adds example files to the given account
-2. Installs the older version (`owncloudSigned1.apk`)
+2. Installs the stable version (`owncloudSignedLatest.apk`)
 3. Logs in with the given credentials
 4. Checks list of files and adds a passcode
-5. Installs the newer version over the older one (without reinstalling)
-6. Verifies the passcode, file list, and commit hash
+5. Installs the app's current `master` version (`owncloudSignedMaster.apk`) over the stable one (without reinstalling)
+6. Verifies the passcode, file list, and commit hash in settings
 
 ## Documentation
 
