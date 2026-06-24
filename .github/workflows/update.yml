@@ -3,12 +3,16 @@ name: Update Test
 on:
   workflow_dispatch:
   schedule:
-    # Runs from Tuesday to Fridat at 01:00 UTC, which is 02:00 CET / 03:00 CEST in Europe
-    - cron: "0 1 * * 2-5"
+    - cron: '0 1 * * 1'    # Monday at 01:00AM UTC
+    - cron: '0 1 * * 2-5'  # Tuesday to Friday at 01:00AM
 
 permissions:
   # Only need read access to repository contents
   contents: read
+
+env:
+  SINCE_REF: ${{ github.event.schedule == '30 2 * * 1' && 'last friday' || 'yesterday' }}
+  UNTIL_REF: ${{ github.event.schedule == '30 2 * * 1' && 'last saturday' || 'today' }}
 
 jobs:
 
@@ -37,8 +41,9 @@ jobs:
           cd android-repo
 
           export TZ="Europe/Madrid"
-          SINCE=$(date -d "yesterday" +"%Y-%m-%d 00:00:00")
-          UNTIL=$(date -d "today" +"%Y-%m-%d 00:00:00")
+
+          SINCE=$(date -d "$SINCE_REF" +"%Y-%m-%d 00:00:00")
+          UNTIL=$(date -d "$UNTIL_REF" +"%Y-%m-%d 00:00:00")
 
           echo "Checking commits in external repo between:"
           echo "SINCE=$SINCE"
