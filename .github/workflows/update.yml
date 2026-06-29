@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 env:
-  SINCE_REF: ${{ github.event.schedule == '30 2 * * 1' && 'last friday' || 'yesterday' }}
-  UNTIL_REF: ${{ github.event.schedule == '30 2 * * 1' && 'last saturday' || 'today' }}
+  SINCE_REF: ${{ github.event.schedule == '0 1 * * 1' && 'last friday' || 'yesterday' }}
+  UNTIL_REF: ${{ github.event.schedule == '0 1 * * 1' && 'last saturday' || 'today' }}
 
 jobs:
 
