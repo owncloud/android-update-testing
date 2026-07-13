@@ -1,0 +1,38 @@
+[versions]
+cucumber = "7.21.0"
+apacheCommonsExec = "1.3"
+apacheCommonsLang = "3.9"
+apacheCommonsText = "1.9"
+apacheCommonsCodec = "1.10"
+apacheCommonsIo = "2.6"
+appiumJavaClient = "9.3.0"
+okhttp = "3.12.13"
+slf4jApi = "1.7.7"
+slf4jNop = "2.0.7"
+junit = "4.13.1"
+json = "20200518"
+assertjCore = "3.8.0"
+
+[libraries]
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
+cucumber-core = { module = "io.cucumber:cucumber-core", version.ref = "cucumber" }
+cucumber-picocontainer = { module = "io.cucumber:cucumber-picocontainer", version.ref = "cucumber" }
+json = { module = "org.json:json", version.ref = "json" }
+commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "apacheCommonsExec" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "apacheCommonsLang" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommonsText" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "apacheCommonsCodec" }
+commons-io = { module = "commons-io:commons-io", version.ref = "apacheCommonsIo" }
+appium-java-client = { module = "io.appium:java-client", version.ref = "appiumJavaClient" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4jNop" }
+junit = { module = "junit:junit", version.ref = "junit" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
+
+[bundles]
+cucumber = ["cucumber-java", "cucumber-junit", "cucumber-core", "cucumber-picocontainer"]
+appium = ["appium-java-client", "okhttp", "json", "slf4j-nop"]
+commons = ["commons-text", "commons-codec", "commons-io"]
+testing = ["commons-exec", "commons-lang3", "slf4j-api", "junit", "assertj-core"]
