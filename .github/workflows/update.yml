@@ -191,7 +191,7 @@ jobs:
 
       # Run tests over emulator and catch crash logs
       - name: Run Emulator & Execute tests
-        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         id: execution
         env:
           URL: ${{ secrets.OC_SERVER_URL }}
