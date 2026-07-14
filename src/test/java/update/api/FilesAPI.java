@@ -127,6 +127,9 @@ public class FilesAPI extends CommonAPI {
 
     private ArrayList<OCFile> getList(Response httpResponse)
             throws IOException, SAXException, ParserConfigurationException {
+        if (httpResponse.body() == null) {
+            throw new IOException("Empty response body from PROPFIND request");
+        }
         SAXParserFactory parserFactor = SAXParserFactory.newInstance();
         SAXParser parser = parserFactor.newSAXParser();
         FileSAXHandler handler = new FileSAXHandler();

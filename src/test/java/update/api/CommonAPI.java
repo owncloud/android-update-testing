@@ -123,6 +123,9 @@ public class CommonAPI {
         Log.log(Level.FINE, "Request: " + request.toString());
         String body;
         try (Response response = httpClient.newCall(request).execute()) {
+            if (response.body() == null) {
+                throw new IOException("Empty response body from " + url + graphDrivesEndpoint);
+            }
             body = response.body().string();
         }
         Log.log(Level.FINE, "Body from me endpoint: " + body);

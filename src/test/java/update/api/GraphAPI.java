@@ -28,6 +28,9 @@ public class GraphAPI extends CommonAPI{
         Request request = getRequest(url);
         String json;
         try (Response response = httpClient.newCall(request).execute()) {
+            if (response.body() == null) {
+                throw new IOException("Empty response body from " + url);
+            }
             json = response.body().string();
         }
         OCSpace personal = new OCSpace();
