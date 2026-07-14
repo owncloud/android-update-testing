@@ -206,7 +206,7 @@ jobs:
           avd-name: test-avd
           force-avd-creation: true
           disable-animations: true
-          emulator-options: -no-snapshot -no-window -no-audio -no-boot-anim -accel on -memory 4096
+          emulator-options: -no-snapshot -no-window -no-audio -no-boot-anim -accel on -memory 4096 -gpu swiftshader_indirect -feature -Vulkan -no-metrics
           script: |
             # To catch only crashes in background
             adb logcat -b crash *:E > crash_log.txt 2>&1 &
