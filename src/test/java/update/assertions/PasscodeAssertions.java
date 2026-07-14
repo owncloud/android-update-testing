@@ -19,10 +19,6 @@ public class PasscodeAssertions {
 
     public void isPasscodeViewDisplayed() {
         assertTrue(world.passcodePage().isPasscodeVisible());
-        enterPasscode();
-    }
-
-    private void enterPasscode() {
         String passcode = LocProperties.getProperties().getProperty("passcode");
         world.passcodePage().enterPasscode(
             String.valueOf(passcode.charAt(0)),

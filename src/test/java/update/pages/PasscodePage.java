@@ -45,8 +45,6 @@ public class PasscodePage extends CommonPage {
     @AndroidFindBy(id = "com.owncloud.android:id/key0Container")
     private WebElement key0;
 
-    public static PasscodePage instance;
-
     public PasscodePage(AndroidDriver driver) {
         super(driver);
         PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);

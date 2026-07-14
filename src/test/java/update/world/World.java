@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import io.appium.java_client.android.AndroidDriver;
 import update.pages.AndroidManager;
-import update.pages.FilelistPage;
+import update.pages.FileListPage;
 import update.pages.LoginPage;
 import update.pages.PasscodePage;
 import update.pages.SettingsPage;
@@ -27,7 +27,7 @@ public class World {
 
     //Involved pages
     private LoginPage loginPage;
-    private FilelistPage filelistPage;
+    private FileListPage filelistPage;
     private SettingsPage settingsPage;
     private PasscodePage passcodePage;
     private FilesAPI filesAPI;
@@ -54,9 +54,9 @@ public class World {
         return loginPage;
     }
 
-    public FilelistPage filelistPage() {
+    public FileListPage filelistPage() {
         if (filelistPage == null) {
-            filelistPage = new FilelistPage(driver);
+            filelistPage = new FileListPage(driver);
         }
         return filelistPage;
     }

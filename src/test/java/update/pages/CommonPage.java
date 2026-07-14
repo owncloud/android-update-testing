@@ -103,6 +103,6 @@ public class CommonPage {
         swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000),
                 PointerInput.Origin.viewport(), endX, endY));
         swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        driver.perform(Arrays.asList(swipe));
+        driver.perform(List.of(swipe));
     }
 }

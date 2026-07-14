@@ -17,12 +17,13 @@ public class PasscodePreconditions {
 
     public void setPasscode() {
         world.filelistPage().openPasscode();
-        enterPasscode();
-        enterPasscode();
-    }
-
-    private void enterPasscode() {
         String passcode = LocProperties.getProperties().getProperty("passcode");
+        // Passcode to be entered twice to confirm it
+        world.passcodePage().enterPasscode(
+            String.valueOf(passcode.charAt(0)),
+            String.valueOf(passcode.charAt(1)),
+            String.valueOf(passcode.charAt(2)),
+            String.valueOf(passcode.charAt(3)));
         world.passcodePage().enterPasscode(
             String.valueOf(passcode.charAt(0)),
             String.valueOf(passcode.charAt(1)),

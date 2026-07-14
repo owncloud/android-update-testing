@@ -60,7 +60,7 @@ public class CommonAPI {
 
     public CommonAPI() throws IOException {
         personalSpaces = new HashMap<>();
-        personalSpaces.put("admin", getPersonalDrives(urlServer, "admin"));
+        personalSpaces.put(user, getPersonalDrives(urlServer, user));
     }
 
     public String getEndpoint(String userName) {
@@ -68,7 +68,7 @@ public class CommonAPI {
         if (isOCIS) {
             endpoint = spacesEndpoint + personalSpaces.get(userName);
         } else {
-            endpoint = davEndpoint = webdavEndpoint + "/" + user;
+            endpoint = webdavEndpoint + "/" + user;
         }
         return endpoint;
     }
@@ -77,7 +77,7 @@ public class CommonAPI {
         if (isOCIS) {
             return spacesEndpoint + personalSpaces.get(user);
         } else {
-            return davEndpoint = webdavEndpoint + "/" + user;
+            return webdavEndpoint + "/" + user;
         }
     }
 

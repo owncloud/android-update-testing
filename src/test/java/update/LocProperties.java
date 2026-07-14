@@ -4,12 +4,12 @@
 
 package update;
 
-import static update.support.log.Log.Log;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
+
+import update.support.log.Log;
 
 public class LocProperties {
 

@@ -7,9 +7,7 @@ package update.pages;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -17,7 +15,7 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import update.support.log.Log;
 
-public class FilelistPage extends CommonPage {
+public class FileListPage extends CommonPage {
 
     @AndroidFindBy(id = "com.owncloud.android:id/root_toolbar")
     private List<WebElement> toolbar;
@@ -31,7 +29,6 @@ public class FilelistPage extends CommonPage {
     @AndroidFindBy(id = "com.owncloud.android:id/nav_settings")
     private WebElement settingsButton;
 
-    public static FilelistPage instance;
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
     private final String bottomBarId = "com.owncloud.android:id/bottom_nav_view";
     private final String syncoption_id = "com.owncloud.android:id/action_sync_file";
@@ -45,7 +42,7 @@ public class FilelistPage extends CommonPage {
     @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
     private WebElement textPreview;
 
-    public FilelistPage(AndroidDriver driver) {
+    public FileListPage(AndroidDriver driver) {
         super(driver);
         PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
     }
@@ -96,12 +93,13 @@ public class FilelistPage extends CommonPage {
     }
 
     public void openPasscode() {
-        Log.log(Level.FINE, "Starts: Open Passocode Settings");
+        Log.log(Level.FINE, "Starts: Open Passcode Settings");
+        String securityText = "Security";
+        String passcodeText = "Passcode lock";
         openSettings();
-        findListUIAutomatorText("Security").get(0).click();
-        findListUIAutomatorText("Passcode lock").get(0).click();
+        findListUIAutomatorText(securityText).get(0).click();
+        findListUIAutomatorText(passcodeText).get(0).click();
     }
-
 
     public void refreshList() {
         Log.log(Level.FINE, "Refresh list");
