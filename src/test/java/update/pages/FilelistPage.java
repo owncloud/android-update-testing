@@ -102,23 +102,6 @@ public class FilelistPage extends CommonPage {
         findListUIAutomatorText("Passcode lock").get(0).click();
     }
 
-    public String pullList(String folderId) {
-        Log.log(Level.FINE, "Starts: pull file from: " + folderId);
-        Map<String, Object> args = new HashMap<>();
-        String user = System.getProperty("username");
-        String owncloudFolder = getDownloadsFolder() + "/owncloud/";
-        String server = System.getProperty("server")
-                .replaceFirst("^https?://", "")
-                .replace(":", "%3A" );
-        String target = owncloudFolder + user + "@" + server  + "/" + folderId;
-        Log.log(Level.FINE, "Command args to execute: " + target);
-        args.put("command", "ls");
-        args.put("args", List.of(target));
-
-        String output = (String) CommonPage.driver.executeScript("mobile: shell", args);
-        Log.log(Level.FINE, "List of files in given folder: " + output);
-        return output;
-    }
 
     public void refreshList() {
         Log.log(Level.FINE, "Refresh list");

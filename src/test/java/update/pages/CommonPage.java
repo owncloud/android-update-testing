@@ -105,32 +105,4 @@ public class CommonPage {
         swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         driver.perform(Arrays.asList(swipe));
     }
-
-    public void cleanUpDevice() {
-        Log.log(Level.FINE, "Starts: Clean up device, owncloud folder");
-        // Remove owncloud folder from device
-        Map<String, Object> args = new HashMap<>();
-        args.put("command", "rm");
-        args.put("args", Arrays.asList("-rf", getDownloadsFolder() + "/*"));
-        driver.executeScript("mobile: shell", args);
-    }
-
-    protected String getDownloadsFolder() {
-        Log.log(Level.FINE, "Starts: Get downloads folder");
-        Map<String, Object> args = new HashMap<>();
-        args.put("command", "ls");
-        args.put("args", Arrays.asList("/sdcard"));
-        String output = (String) driver.executeScript("mobile: shell", args);
-
-        if (output.contains("Download")) {
-            Log.log(Level.FINE, "/sdcard/Download");
-            return "/sdcard/Download";
-        } else if (output.contains("Downloads")) {
-            Log.log(Level.FINE, "/sdcard/Downloads");
-            return "/sdcard/Downloads";
-        } else {
-            return "";
-        }
-    }
-
 }

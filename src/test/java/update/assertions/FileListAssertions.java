@@ -43,7 +43,7 @@ public class FileListAssertions {
     public void areFilesDownloaded(List<List<String>> listItems) throws IOException {
         String folderId = world.graphAPI().getPersonal().getId().replace("$", "\\$");
         Log.log(Level.FINE, "Folder id: " + folderId);
-        String listFiles = world.filelistPage().pullList(folderId);
+        String listFiles = world.deviceClient().pullList(folderId);
         Log.log(Level.FINE, "Pulled list " + listFiles.replace("\n", " "));
         for (List<String> rows : listItems) {
             String itemName = rows.get(0);
@@ -55,7 +55,7 @@ public class FileListAssertions {
     public void areFilesDownloadedInFolder(String folder, List<List<String>> listItems) throws IOException {
         String folderId = world.graphAPI().getPersonal().getId().replace("$", "\\$");
         Log.log(Level.FINE, "Folder id: " + folderId);
-        String listFiles = world.filelistPage().pullList(folderId + "/" + folder);
+        String listFiles = world.deviceClient().pullList(folderId + "/" + folder);
         Log.log(Level.FINE, "Pulled list " + listFiles.replace("\n", " "));
         for (List<String> rows : listItems) {
             String itemName = rows.get(0);

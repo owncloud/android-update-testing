@@ -16,6 +16,7 @@ import update.assertions.PasscodeAssertions;
 import update.assertions.SettingsAssertions;
 import update.preconditions.FileListPreconditions;
 import update.preconditions.PasscodePreconditions;
+import update.support.device.DeviceClient;
 import update.support.video.ScreenRecorder;
 import update.tasks.FileListTasks;
 import update.tasks.LoginTasks;
@@ -40,6 +41,7 @@ public class World {
     private SettingsAssertions settingsAssertions;
     private PasscodeAssertions passcodeAssertions;
     private ScreenRecorder screenRecorder;
+    private DeviceClient deviceClient;
 
     public World() {
         this.driver = AndroidManager.getDriver();
@@ -148,5 +150,12 @@ public class World {
             screenRecorder = new ScreenRecorder(driver);
         }
         return screenRecorder;
+    }
+
+    public DeviceClient deviceClient() {
+        if (deviceClient == null) {
+            deviceClient = new DeviceClient(driver);
+        }
+        return deviceClient;
     }
 }
