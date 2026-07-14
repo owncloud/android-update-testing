@@ -7,6 +7,7 @@ package update.hooks;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -19,7 +20,6 @@ import io.cucumber.java.Scenario;
 import update.LocProperties;
 import update.model.OCFile;
 import update.pages.AndroidManager;
-import update.pages.CommonPage;
 import update.support.log.Log;
 import update.world.World;
 
@@ -36,7 +36,7 @@ public class Hooks {
         Log.log(Level.FINE, "START SCENARIO EXECUTION: " + scenario.getName());
         AndroidManager.getDriver().activateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
-        //CommonPage.startRecording();
+        world.screenRecorder().startRecording();
     }
 
     @After
@@ -44,9 +44,17 @@ public class Hooks {
         AndroidManager.getDriver().terminateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
         cleanUp();
-        //CommonPage.stopRecording();
+        stopRecording(scenario);
         world.filelistPage().cleanUpDevice();
         Log.log(Level.FINE, "END SCENARIO EXECUTION: " + scenario.getName() + "\n\n");
+    }
+
+    private void stopRecording(Scenario scenario) {
+        String featurePath = scenario.getUri().toString();
+        String featureName = Paths.get(featurePath).getFileName().toString()
+                .replace(".feature", "");
+        boolean saveVideo = scenario.isFailed();
+        world.screenRecorder().stopRecording(scenario.getName(), featureName, saveVideo);
     }
 
     private void cleanUp()

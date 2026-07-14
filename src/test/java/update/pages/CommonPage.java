@@ -4,7 +4,6 @@
 
 package update.pages;
 
-import org.apache.commons.codec.binary.Base64;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
@@ -14,12 +13,6 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +22,6 @@ import java.util.logging.Level;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidStartScreenRecordingOptions;
 import update.support.log.Log;
 
 public class CommonPage {
@@ -141,25 +133,4 @@ public class CommonPage {
         }
     }
 
-    public static void startRecording() {
-        AndroidStartScreenRecordingOptions androidStartScreenRecordingOptions =
-                new AndroidStartScreenRecordingOptions();
-        androidStartScreenRecordingOptions.withBitRate(2000000);
-        androidStartScreenRecordingOptions.withVideoSize("360x640");
-        driver.startRecordingScreen(androidStartScreenRecordingOptions);
-    }
-
-    public static void stopRecording() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String base64String = driver.stopRecordingScreen();
-        byte[] data = Base64.decodeBase64(base64String);
-        String destinationPath = "video/upgrade_" +
-                sdf.format(new Timestamp(System.currentTimeMillis()).getTime()) + ".mp4";
-        Path path = Paths.get(destinationPath);
-        try {
-            Files.write(path, data);
-        } catch (IOException e) {
-            Log.log(Level.FINE, e.getMessage());
-        }
-    }
 }
