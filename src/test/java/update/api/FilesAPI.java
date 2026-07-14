@@ -85,8 +85,6 @@ public class FilesAPI extends CommonAPI {
         String url = urlServer + getEndpoint() + "/" + itemName;
         Log.log(Level.FINE, "Starts: Request check if item exists in server");
         Log.log(Level.FINE, "URL: " + url);
-        Log.log(Level.FINE, "Username: " + user);
-        Log.log(Level.FINE, "Password: " + password);
         Request request = davRequest(url, "PROPFIND", null, user);
         int responseCode;
         String responseMessage;
