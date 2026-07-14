@@ -78,6 +78,7 @@ public class LoginPage extends CommonPage {
         File rootPath = new File(System.getProperty("user.dir"));
         File appDir = new File(rootPath, "src/test/resources");
         File app = new File(appDir,LocProperties.getProperties().getProperty("apk2update"));
+        driver.terminateApp(LocProperties.getProperties().getProperty("appPackage"));
         driver.installApp(app.getAbsolutePath());
         // Ugly waiter, no other way to wait for the app to be installed and the system to be ready
         Thread.sleep(3000);
