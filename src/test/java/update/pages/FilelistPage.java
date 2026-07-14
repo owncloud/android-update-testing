@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import update.support.log.Log;
@@ -44,16 +45,9 @@ public class FilelistPage extends CommonPage {
     @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
     private WebElement textPreview;
 
-    private FilelistPage() {
-        super();
+    public FilelistPage(AndroidDriver driver) {
+        super(driver);
         PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
-    }
-
-    public static FilelistPage getInstance() {
-        if (instance == null) {
-            instance = new FilelistPage();
-        }
-        return instance;
     }
 
     public void download(String itemName) {

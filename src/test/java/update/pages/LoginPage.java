@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import update.LocProperties;
@@ -42,16 +43,9 @@ public class LoginPage extends CommonPage {
     public static LoginPage instance;
     private String server;
 
-    private LoginPage() {
-        super();
+    public LoginPage(AndroidDriver driver) {
+        super(driver);
         PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
-    }
-
-    public static LoginPage getInstance() {
-        if (instance == null) {
-            instance = new LoginPage();
-        }
-        return instance;
     }
 
     public void typeURL(String server) {

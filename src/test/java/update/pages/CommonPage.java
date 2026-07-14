@@ -34,10 +34,11 @@ import update.support.log.Log;
 
 public class CommonPage {
 
-    protected static AndroidDriver driver = AndroidManager.getDriver();
+    protected static AndroidDriver driver;
     protected static final int WAIT_TIME = 20;
 
-    public CommonPage() {
+    public CommonPage(AndroidDriver driver) {
+        this.driver = driver;
     }
 
     public WebElement findId(String id) {

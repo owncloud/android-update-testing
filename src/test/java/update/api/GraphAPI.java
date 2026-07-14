@@ -17,16 +17,7 @@ import update.support.log.Log;
 
 public class GraphAPI extends CommonAPI{
 
-    public static GraphAPI instance;
-
-    private GraphAPI() throws IOException {
-    }
-
-    public static GraphAPI getInstance() throws IOException {
-        if (instance == null) {
-            instance = new GraphAPI();
-        }
-        return instance;
+    public GraphAPI() throws IOException {
     }
 
     public OCSpace getPersonal() throws IOException {

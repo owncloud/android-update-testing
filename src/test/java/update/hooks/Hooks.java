@@ -36,7 +36,7 @@ public class Hooks {
         Log.log(Level.FINE, "START SCENARIO EXECUTION: " + scenario.getName());
         AndroidManager.getDriver().activateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
-        CommonPage.startRecording();
+        //CommonPage.startRecording();
     }
 
     @After
@@ -44,8 +44,8 @@ public class Hooks {
         AndroidManager.getDriver().terminateApp(
                 LocProperties.getProperties().getProperty("appPackage"));
         cleanUp();
-        CommonPage.stopRecording();
-        world.filelistPage.cleanUpDevice();
+        //CommonPage.stopRecording();
+        world.filelistPage().cleanUpDevice();
         Log.log(Level.FINE, "END SCENARIO EXECUTION: " + scenario.getName() + "\n\n");
     }
 
@@ -57,12 +57,12 @@ public class Hooks {
         //First, remove leftovers in root folder for every user
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("admin"));
         for (String userToClean: userNames) {
-            ArrayList<OCFile> filesRoot = world.filesAPI.listItems("", userToClean);
+            ArrayList<OCFile> filesRoot = world.filesAPI().listItems("", userToClean);
             for (OCFile iterator : filesRoot) {
-                world.filesAPI.removeItem(iterator.getName(), userToClean);
+                world.filesAPI().removeItem(iterator.getName(), userToClean);
             }
             //Empty trashbins
-            world.trashbinAPI.emptyTrashbin(userToClean);
+            world.trashbinAPI().emptyTrashbin(userToClean);
         }
     }
 }

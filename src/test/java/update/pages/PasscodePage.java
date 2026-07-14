@@ -5,6 +5,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.logging.Level;
 
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import update.support.log.Log;
@@ -46,16 +47,9 @@ public class PasscodePage extends CommonPage {
 
     public static PasscodePage instance;
 
-    public PasscodePage() {
-        super();
+    public PasscodePage(AndroidDriver driver) {
+        super(driver);
         PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
-    }
-
-    public static PasscodePage getInstance() {
-        if (instance == null) {
-            instance = new PasscodePage();
-        }
-        return instance;
     }
 
     public boolean isPasscodeVisible() {
