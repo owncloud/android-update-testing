@@ -40,7 +40,6 @@ public class LoginPage extends CommonPage {
     @AndroidFindBy(id = "android:id/button1")
     private WebElement acceptHttp;
 
-    public static LoginPage instance;
     private String server;
 
     public LoginPage(AndroidDriver driver) {

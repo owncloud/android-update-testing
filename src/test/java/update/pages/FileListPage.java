@@ -19,28 +19,22 @@ public class FileListPage extends CommonPage {
 
     @AndroidFindBy(id = "com.owncloud.android:id/root_toolbar")
     private List<WebElement> toolbar;
-
     @AndroidFindBy(id = "com.owncloud.android:id/bottom_nav_view")
     private List<WebElement> bottomBar;
-
     @AndroidFindBy(id = "com.owncloud.android:id/root_toolbar_left_icon")
     private List<WebElement> hamburgerButton;
-
     @AndroidFindBy(id = "com.owncloud.android:id/nav_settings")
     private WebElement settingsButton;
+    @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Back\"]")
+    private WebElement back;
+    @AndroidFindBy(uiAutomator = "new UiSelector().resourceId(\"com.owncloud.android:id/action_mode_close_button\");")
+    private WebElement closeSelectionMode;
+    @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
+    private WebElement textPreview;
 
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
     private final String bottomBarId = "com.owncloud.android:id/bottom_nav_view";
     private final String syncoption_id = "com.owncloud.android:id/action_sync_file";
-
-    @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Back\"]")
-    private WebElement back;
-
-    @AndroidFindBy(uiAutomator = "new UiSelector().resourceId(\"com.owncloud.android:id/action_mode_close_button\");")
-    private WebElement closeSelectionMode;
-
-    @AndroidFindBy(id = "com.owncloud.android:id/text_preview")
-    private WebElement textPreview;
 
     public FileListPage(AndroidDriver driver) {
         super(driver);

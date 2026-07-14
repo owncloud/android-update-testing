@@ -21,18 +21,14 @@ import update.support.parser.DrivesJSONHandler;
 public class CommonAPI {
 
     protected OkHttpClient httpClient = oCHttpClient.getUnsafeOkHttpClient();
-
     protected String urlServer = System.getProperty("server");
     protected String userAgent = LocProperties.getProperties().getProperty("userAgent");
     protected String host = getHost();
-
     protected String user = System.getProperty("username");
     protected String password = System.getProperty("password");
-
     protected final String webdavEndpoint = "/remote.php/dav/files";
     protected final String spacesEndpoint = "/dav/spaces/";
     protected final String graphDrivesEndpoint = "/graph/v1.0/me/drives";
-    protected String davEndpoint = "";
     boolean isOCIS = true;
     protected HashMap<String, String> personalSpaces;
 

@@ -17,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import io.appium.java_client.android.AndroidDriver;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
