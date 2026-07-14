@@ -40,7 +40,7 @@ public class AndroidManager {
             driver = new AndroidDriver(new URL(driverURL), capabilities);
         } catch (MalformedURLException e) {
             Log.log(Level.SEVERE, "Driver could not be created: " + e.getMessage());
-            e.printStackTrace();
+            throw new RuntimeException("Invalid Appium URL: " + driverURL, e);
         }
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(IMPLICIT_WAIT));

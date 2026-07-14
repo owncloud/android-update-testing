@@ -82,41 +82,32 @@ public class CommonAPI {
     }
 
     protected Request davRequest(String url, String method, RequestBody body, String userName) {
-        Log.log(Level.FINE, "Starts: Request to DAV API: " + userName );
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("OCS-APIREQUEST", "true")
-                .addHeader("User-Agent", userAgent)
-                .addHeader("Authorization", "Basic " + credentialsBuilder(userName))
-                .addHeader("Host", host)
+        Log.log(Level.FINE, "Starts: Request to DAV API: " + userName);
+        return baseRequestBuilder(url, credentialsBuilder(userName))
                 .method(method, body)
                 .build();
-        return request;
     }
 
     protected Request deleteRequest(String url, String userName) {
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("OCS-APIREQUEST", "true")
-                .addHeader("User-Agent", userAgent)
-                .addHeader("Authorization", "Basic " + credentialsBuilder(userName))
-                .addHeader("Host", host)
+        return baseRequestBuilder(url, credentialsBuilder(userName))
                 .delete()
                 .build();
-        return request;
     }
 
     protected Request getRequest(String url) {
-        String credentialsB64 = Base64.getEncoder().encodeToString((user + ":" + password).getBytes());
-        Request request = new Request.Builder()
+        String credentials = Base64.getEncoder().encodeToString((user + ":" + password).getBytes());
+        return baseRequestBuilder(url, credentials)
+                .get()
+                .build();
+    }
+
+    private Request.Builder baseRequestBuilder(String url, String credentials) {
+        return new Request.Builder()
                 .url(url)
                 .addHeader("OCS-APIREQUEST", "true")
                 .addHeader("User-Agent", userAgent)
-                .addHeader("Authorization", "Basic " + credentialsB64)
-                .addHeader("Host", host)
-                .get()
-                .build();
-        return request;
+                .addHeader("Authorization", "Basic " + credentials)
+                .addHeader("Host", host);
     }
 
     private String getHost() {
