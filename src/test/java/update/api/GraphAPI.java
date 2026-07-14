@@ -26,15 +26,17 @@ public class GraphAPI extends CommonAPI{
         String myDrives = "me/drives/";
         String url = urlServer + graphPath + myDrives;
         Request request = getRequest(url);
-        Response response = httpClient.newCall(request).execute();
-        String json = response.body().string();
+        String json;
+        try (Response response = httpClient.newCall(request).execute()) {
+            json = response.body().string();
+        }
         OCSpace personal = new OCSpace();
         JSONObject obj = new JSONObject(json);
         JSONArray value = obj.getJSONArray("value");
         for (int i = 0; i < value.length(); i++) {
             JSONObject jsonObject = value.getJSONObject(i);
             String type = jsonObject.getString("driveType");
-            if (type.equals("personal")) { //Just for user created spaces
+            if (type.equals("personal")) {
                 personal.setType(jsonObject.getString("driveType"));
                 personal.setId(jsonObject.getString("id"));
                 personal.setName(jsonObject.getString("name"));

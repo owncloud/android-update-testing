@@ -26,8 +26,9 @@ public class TrashbinAPI extends CommonAPI {
         Log.log(Level.FINE, "Starts: Empty trashbin");
         Log.log(Level.FINE, url);
         Request request = deleteRequest(url, userName);
-        Response response = httpClient.newCall(request).execute();
-        response.close();
+        try (Response response = httpClient.newCall(request).execute()) {
+            // response body not needed
+        }
     }
 
     private String getTrashEndpoint(String userName){
