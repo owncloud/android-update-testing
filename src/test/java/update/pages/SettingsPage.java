@@ -17,7 +17,7 @@ public class SettingsPage extends CommonPage {
 
     public SettingsPage(AndroidDriver driver) {
         super(driver);
-        PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
+        PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
     public boolean isCommitCorrect(String commitHash) {

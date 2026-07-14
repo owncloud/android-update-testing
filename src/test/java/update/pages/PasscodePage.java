@@ -47,19 +47,17 @@ public class PasscodePage extends CommonPage {
 
     public PasscodePage(AndroidDriver driver) {
         super(driver);
-        PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
+        PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
     public boolean isPasscodeVisible() {
         Log.log(Level.FINE, "Starts: Check if passcode view is visible");
-        // Get one key as representative of the keypad
         return title.isDisplayed() && key1.isDisplayed();
     }
 
     public void enterPasscode (String char1, String char2, String char3, String char4) {
         Log.log(Level.FINE, "Starts: Enter Passcode: " + char1 + char2 + char3 + char4);
-        // Get one key as representative of the keypad
-        CommonPage.waitById("com.owncloud.android:id/key1Container");
+        waitById("com.owncloud.android:id/key1Container");
         clickPasscodeChar(char1);
         clickPasscodeChar(char2);
         clickPasscodeChar(char3);

@@ -34,11 +34,11 @@ public class FileListPage extends CommonPage {
 
     private final String fabId = "com.owncloud.android:id/fab_expand_menu_button";
     private final String bottomBarId = "com.owncloud.android:id/bottom_nav_view";
-    private final String syncoption_id = "com.owncloud.android:id/action_sync_file";
+    private final String syncoptionId = "com.owncloud.android:id/action_sync_file";
 
     public FileListPage(AndroidDriver driver) {
         super(driver);
-        PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
+        PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
     public void download(String itemName) {
@@ -53,7 +53,7 @@ public class FileListPage extends CommonPage {
 
     public boolean isViewVisible() {
         Log.log(Level.FINE, "Starts: Check if file list view is visible");
-        CommonPage.waitById(fabId);
+        waitById(fabId);
         return !toolbar.isEmpty() && !bottomBar.isEmpty();
     }
 
@@ -68,7 +68,7 @@ public class FileListPage extends CommonPage {
 
     public void openMenuActions(String operation) {
         if (operation.equals("Download")){
-            findId(syncoption_id).click();
+            findId(syncoptionId).click();
             return;
         }
         findUIAutomatorDescription("More options").click();
@@ -97,7 +97,7 @@ public class FileListPage extends CommonPage {
 
     public void refreshList() {
         Log.log(Level.FINE, "Refresh list");
-        CommonPage.waitById(bottomBarId);
+        waitById(bottomBarId);
         swipe(0.50, 0.30, 0.50, 0.80);
     }
 }

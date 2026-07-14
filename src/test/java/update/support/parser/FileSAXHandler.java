@@ -20,7 +20,7 @@ public class FileSAXHandler extends DefaultHandler {
 
     private OCFile file;
     private ArrayList<OCFile> listFiles = new ArrayList<>();
-    private static String text = null;
+    private String text = null;
 
     @Override
     public void startElement(String uri, String localName, String node, Attributes attributes) {

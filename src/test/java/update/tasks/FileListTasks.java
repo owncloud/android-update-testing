@@ -30,7 +30,6 @@ public class FileListTasks {
         world.filelistPage().closeSelectionMode();
     }
 
-    // Not regular task, but a helper method to check if the file list is visible
     public boolean isFileListVisible() {
         return world.filelistPage().isViewVisible();
     }

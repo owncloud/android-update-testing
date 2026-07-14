@@ -44,7 +44,7 @@ public class LoginPage extends CommonPage {
 
     public LoginPage(AndroidDriver driver) {
         super(driver);
-        PageFactory.initElements(new AppiumFieldDecorator(CommonPage.driver), this);
+        PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
     public void typeURL(String server) {
@@ -69,7 +69,7 @@ public class LoginPage extends CommonPage {
         String prefix = server.split("://")[0];
         if (prefix.equals("https")) {
             acceptCertificate.click();
-        } else { //http
+        } else {
             acceptHttp.click();
         }
     }
@@ -78,10 +78,9 @@ public class LoginPage extends CommonPage {
         File rootPath = new File(System.getProperty("user.dir"));
         File appDir = new File(rootPath, "src/test/resources");
         File app = new File(appDir,LocProperties.getProperties().getProperty("apk2update"));
-        CommonPage.driver.installApp(app.getAbsolutePath());
+        driver.installApp(app.getAbsolutePath());
         // Ugly waiter, no other way to wait for the app to be installed and the system to be ready
         Thread.sleep(3000);
-        CommonPage.driver.activateApp(LocProperties.getProperties().getProperty("appPackage"));
-        //Go to settings and check
+        driver.activateApp(LocProperties.getProperties().getProperty("appPackage"));
     }
 }
