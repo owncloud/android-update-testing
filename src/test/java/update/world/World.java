@@ -11,6 +11,13 @@ import update.pages.SettingsPage;
 import update.api.FilesAPI;
 import update.api.GraphAPI;
 import update.api.TrashbinAPI;
+import update.assertions.FileListAssertions;
+import update.assertions.PasscodeAssertions;
+import update.assertions.SettingsAssertions;
+import update.preconditions.FileListPreconditions;
+import update.preconditions.PasscodePreconditions;
+import update.tasks.FileListTasks;
+import update.tasks.LoginTasks;
 
 public class World {
 
@@ -24,6 +31,13 @@ public class World {
     private FilesAPI filesAPI;
     private GraphAPI graphAPI;
     private TrashbinAPI trashbinAPI;
+    private FileListPreconditions fileListPreconditions;
+    private PasscodePreconditions passcodePreconditions;
+    private LoginTasks loginTasks;
+    private FileListTasks fileListTasks;
+    private FileListAssertions fileListAssertions;
+    private SettingsAssertions settingsAssertions;
+    private PasscodeAssertions passcodeAssertions;
 
     public World() {
         this.driver = AndroidManager.getDriver();
@@ -76,5 +90,54 @@ public class World {
             trashbinAPI = new TrashbinAPI();
         }
         return trashbinAPI;
+    }
+
+    public FileListPreconditions fileListPreconditions() {
+        if (fileListPreconditions == null) {
+            fileListPreconditions = new FileListPreconditions(this);
+        }
+        return fileListPreconditions;
+    }
+
+    public PasscodePreconditions passcodePreconditions() {
+        if (passcodePreconditions == null) {
+            passcodePreconditions = new PasscodePreconditions(this);
+        }
+        return passcodePreconditions;
+    }
+
+    public LoginTasks loginTasks() {
+        if (loginTasks == null) {
+            loginTasks = new LoginTasks(this);
+        }
+        return loginTasks;
+    }
+
+    public FileListTasks fileListTasks() {
+        if (fileListTasks == null) {
+            fileListTasks = new FileListTasks(this);
+        }
+        return fileListTasks;
+    }
+
+    public FileListAssertions fileListAssertions() {
+        if (fileListAssertions == null) {
+            fileListAssertions = new FileListAssertions(this);
+        }
+        return fileListAssertions;
+    }
+
+    public SettingsAssertions settingsAssertions() {
+        if (settingsAssertions == null) {
+            settingsAssertions = new SettingsAssertions(this);
+        }
+        return settingsAssertions;
+    }
+
+    public PasscodeAssertions passcodeAssertions() {
+        if (passcodeAssertions == null) {
+            passcodeAssertions = new PasscodeAssertions(this);
+        }
+        return passcodeAssertions;
     }
 }
