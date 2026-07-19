@@ -10,7 +10,7 @@ okhttp = "3.12.13"
 slf4jApi = "1.7.7"
 slf4jNop = "2.0.7"
 junit = "4.13.1"
-json = "20200518"
+json = "20260719"
 assertjCore = "3.8.0"
 
 [libraries]
