@@ -1,17 +1,17 @@
 [versions]
-cucumber = "7.21.0"
-apacheCommonsExec = "1.3"
-apacheCommonsLang = "3.9"
-apacheCommonsText = "1.9"
-apacheCommonsCodec = "1.10"
-apacheCommonsIo = "2.6"
+cucumber = "7.34.4"
+apacheCommonsExec = "1.6.0"
+apacheCommonsLang = "3.20.0"
+apacheCommonsText = "1.15.0"
+apacheCommonsCodec = "1.22.0"
+apacheCommonsIo = "2.22.0"
 appiumJavaClient = "10.1.1"
 okhttp = "5.4.0"
 slf4jApi = "2.0.18"
-slf4jNop = "2.0.7"
-junit = "4.13.1"
+slf4jNop = "2.0.18"
+junit = "4.13.2"
 json = "20260719"
-assertjCore = "3.8.0"
+assertjCore = "3.27.7"
 
 [libraries]
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
