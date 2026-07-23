@@ -4,8 +4,6 @@
 
 package update.pages;
 
-import org.openqa.selenium.remote.DesiredCapabilities;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,6 +11,7 @@ import java.time.Duration;
 import java.util.logging.Level;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import update.LocProperties;
 import update.support.log.Log;
 
@@ -33,7 +32,7 @@ public class AndroidManager {
         File appDir = new File(rootPath, "src/test/resources");
         app = new File(appDir, LocProperties.getProperties().getProperty("apkName"));
 
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+        UiAutomator2Options capabilities = new UiAutomator2Options();
         setCapabilities(capabilities);
 
         try {
@@ -64,23 +63,17 @@ public class AndroidManager {
     }
 
     //Check https://appium.io/docs/en/2.5/guides/caps/
-    public static void setCapabilities(DesiredCapabilities capabilities) {
-        capabilities.setCapability("appium:deviceName", "test");
-        capabilities.setCapability("appium:app", app.getAbsolutePath());
-        capabilities.setCapability("appium:platformName", "Android");
-        capabilities.setCapability("appium:automationName", "UIAutomator2");
-        capabilities.setCapability("appium:appPackage", appPackage);
-        capabilities.setCapability("appium:appActivity",
-                "com.owncloud.android.ui.activity.SplashActivity");
-        capabilities.setCapability("appium:appWaitPackage",
-                LocProperties.getProperties().getProperty("appPackage"));
-        capabilities.setCapability("appium:appWaitForLaunch", "true");
-        capabilities.setCapability("appium:autoGrantPermissions", true);
-        capabilities.setCapability("appium:unicodeKeyboard", true);
-        capabilities.setCapability("appium:resetKeyboard", true);
-        capabilities.setCapability("appium:disableWindowAnimation", true);
-        capabilities.setCapability("appium:noReset", true);
-        capabilities.setCapability("appium:newCommandTimeout", 60);
+    public static void setCapabilities(UiAutomator2Options capabilities) {
+        capabilities.setDeviceName("test");
+        capabilities.setApp(app.getAbsolutePath());
+        capabilities.setAppPackage(appPackage);
+        capabilities.setAppActivity("com.owncloud.android.ui.activity.SplashActivity");
+        capabilities.setAppWaitPackage(LocProperties.getProperties().getProperty("appPackage"));
+        capabilities.setAppWaitForLaunch(true);
+        capabilities.setAutoGrantPermissions(true);
+        capabilities.setDisableWindowAnimation(true);
+        capabilities.setNoReset(true);
+        capabilities.setNewCommandTimeout(Duration.ofSeconds(60));
         capabilities.setCapability("appium:uiautomator2ServerLaunchTimeout", 60000);
         capabilities.setCapability("appium:adbExecTimeout", 60000);
         capabilities.setCapability("appium:androidInstallTimeout", 90000);
