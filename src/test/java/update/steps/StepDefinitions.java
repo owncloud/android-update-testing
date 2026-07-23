@@ -73,6 +73,7 @@ public class StepDefinitions {
                 }
             }
             case "av.offline" -> world.fileListTasks().setAvailableOffline(itemName);
+            default -> throw new IllegalArgumentException("Unknown operation: " + operation);
         }
     }
 

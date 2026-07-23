@@ -8,13 +8,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 import update.model.OCFile;
-import update.support.log.Log;
 
 public class FileSAXHandler extends DefaultHandler {
 
@@ -77,12 +75,7 @@ public class FileSAXHandler extends DefaultHandler {
     }
 
     private String getFileNameFromPath(String path) {
-        try {
-            String[] pathSplitted = path.split("/");
-            return URLDecoder.decode(pathSplitted[pathSplitted.length - 1], "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.log(Level.SEVERE, "Unsupported Encoding Exception: " + e.getMessage());
-        }
-        return null;
+        String[] pathSplitted = path.split("/");
+        return URLDecoder.decode(pathSplitted[pathSplitted.length - 1], StandardCharsets.UTF_8);
     }
 }

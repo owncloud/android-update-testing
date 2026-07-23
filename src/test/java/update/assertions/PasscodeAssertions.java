@@ -20,6 +20,9 @@ public class PasscodeAssertions {
     public void isPasscodeViewDisplayed() {
         assertTrue(world.passcodePage().isPasscodeVisible());
         String passcode = LocProperties.getProperties().getProperty("passcode");
+        if (passcode == null || passcode.length() < 4) {
+            throw new IllegalStateException("Property 'passcode' must be at least 4 characters, got: " + passcode);
+        }
         world.passcodePage().enterPasscode(
             String.valueOf(passcode.charAt(0)),
             String.valueOf(passcode.charAt(1)),

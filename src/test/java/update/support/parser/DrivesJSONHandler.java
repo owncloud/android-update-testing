@@ -14,10 +14,10 @@ public class DrivesJSONHandler {
         JSONArray valuesArr = drivesObj.getJSONArray("value");
         for (int i = 0; i < valuesArr.length() ; i++){
             JSONObject drivesList = valuesArr.getJSONObject(i);
-            if (drivesList.get("driveType").equals("personal")){
-                return (String)drivesList.get("id");
+            if ("personal".equals(drivesList.optString("driveType"))){
+                return drivesList.getString("id");
             }
         }
-        return "";
+        throw new IllegalStateException("No personal drive found in Graph API response");
     }
 }

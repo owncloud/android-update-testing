@@ -91,7 +91,7 @@ public class CommonAPI {
     }
 
     protected Request getRequest(String url) {
-        String credentials = Base64.getEncoder().encodeToString((user + ":" + password).getBytes());
+        String credentials = Base64.getEncoder().encodeToString((user.toLowerCase() + ":" + password).getBytes());
         return baseRequestBuilder(url, credentials)
                 .get()
                 .build();
@@ -108,6 +108,9 @@ public class CommonAPI {
 
     private String getHost() {
         Log.log(Level.FINE, "URL: " + urlServer);
+        if (urlServer == null || !urlServer.contains("//")) {
+            throw new IllegalArgumentException("System property 'server' is missing or malformed: " + urlServer);
+        }
         host = urlServer.split("//")[1];
         Log.log(Level.FINE, "HOST: " + host);
         return host;
