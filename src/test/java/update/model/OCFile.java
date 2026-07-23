@@ -35,20 +35,40 @@ public class OCFile {
         this.path = path;
     }
 
+    public String getSize() {
+        return size;
+    }
+
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public String getPermissions() {
+        return permissions;
     }
 
     public void setPermissions(String permissions) {
         this.permissions = permissions;
     }
 
+    public String getPrivateLink() {
+        return privateLink;
+    }
+
     public void setPrivateLink(String privateLink) {
         this.privateLink = privateLink;
     }
 
+    public String getLastModified() {
+        return lastModified;
+    }
+
     public void setLastModified(String lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void setType(String type) {

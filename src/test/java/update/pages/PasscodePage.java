@@ -1,3 +1,7 @@
+/**
+ * @author Jesús Recio Rincón (@jesmrec)
+ */
+
 package update.pages;
 
 import org.openqa.selenium.WebElement;
