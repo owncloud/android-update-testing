@@ -14,8 +14,8 @@ import update.support.log.Log;
 public class TrashbinAPI extends CommonAPI {
 
     private final String trashEndpointOCIS = "/remote.php/dav/spaces/trash-bin/";
+    // oC10 trashbin lives under the user's own namespace.
     private final String trashEndpointOC10 = "/remote.php/dav/trash-bin/";
-
 
     public TrashbinAPI() throws IOException {
         super();
@@ -31,8 +31,10 @@ public class TrashbinAPI extends CommonAPI {
         }
     }
 
-    private String getTrashEndpoint(String userName){
+    private String getTrashEndpoint(String userName) throws IOException {
         if (isOCIS) {
+            // Ensure the personal space ID is cached, then reuse it.
+            getEndpoint(userName);
             return trashEndpointOCIS + personalSpaces.get(userName);
         } else {
             return trashEndpointOC10 + userName + "/";

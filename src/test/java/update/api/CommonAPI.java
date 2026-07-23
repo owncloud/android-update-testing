@@ -26,10 +26,11 @@ public class CommonAPI {
     protected String host = getHost();
     protected String user = System.getProperty("username");
     protected String password = System.getProperty("password");
+    // Pass -Dserver.type=oC10 to run against an ownCloud 10 server; defaults to oCIS.
+    protected final boolean isOCIS = !"oC10".equals(System.getProperty("server.type", "oCIS"));
     protected final String webdavEndpoint = "/remote.php/dav/files";
     protected final String spacesEndpoint = "/dav/spaces/";
     protected final String graphDrivesEndpoint = "/graph/v1.0/me/drives";
-    boolean isOCIS = true;
     protected HashMap<String, String> personalSpaces;
 
     protected String basicPropfindBody = "<?xml version='1.0' encoding='UTF-8' ?>\n" +
@@ -56,25 +57,23 @@ public class CommonAPI {
 
     public CommonAPI() throws IOException {
         personalSpaces = new HashMap<>();
-        personalSpaces.put(user, getPersonalDrives(urlServer, user));
     }
 
-    public String getEndpoint(String userName) {
-        String endpoint;
+    public String getEndpoint(String userName) throws IOException {
         if (isOCIS) {
-            endpoint = spacesEndpoint + personalSpaces.get(userName);
+            // Lazy-load personal space ID per user; cached after first fetch.
+            if (!personalSpaces.containsKey(userName)) {
+                personalSpaces.put(userName, getPersonalDrives(urlServer, userName));
+            }
+            return spacesEndpoint + personalSpaces.get(userName);
         } else {
-            endpoint = webdavEndpoint + "/" + user;
+            // oC10: classic WebDAV endpoint, no space ID needed.
+            return webdavEndpoint + "/" + userName;
         }
-        return endpoint;
     }
 
-    public String getEndpoint() {
-        if (isOCIS) {
-            return spacesEndpoint + personalSpaces.get(user);
-        } else {
-            return webdavEndpoint + "/" + user;
-        }
+    public String getEndpoint() throws IOException {
+        return getEndpoint(user);
     }
 
     protected Request davRequest(String url, String method, RequestBody body, String userName) {
