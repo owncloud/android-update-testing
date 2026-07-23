@@ -33,7 +33,7 @@ public class FilesAPI extends CommonAPI {
 
     public void removeItem(String itemName, String userName)
             throws IOException {
-        String url = urlServer + getEndpoint(userName) + "/" + itemName + "/";
+        String url = urlServer + getEndpoint(userName) + "/" + itemName;
         Log.log(Level.FINE, "Starts: Request remove item from server");
         Log.log(Level.FINE, "URL: " + url);
         Request request = deleteRequest(url, userName);
@@ -55,7 +55,7 @@ public class FilesAPI extends CommonAPI {
 
     public void pushFile(String fileName, String userName)
             throws IOException {
-        String url = urlServer + getEndpoint(userName) + "/" + fileName + "/";
+        String url = urlServer + getEndpoint(userName) + "/" + fileName;
         Log.log(Level.FINE, "Starts: Request create file");
         Log.log(Level.FINE, "URL: " + url);
         RequestBody body = RequestBody.create(MediaType.parse("text/plain"), "textExample");
@@ -67,7 +67,7 @@ public class FilesAPI extends CommonAPI {
 
     public void pushFileByMime(String itemName, String mimetype)
             throws IOException {
-        String url = urlServer + getEndpoint() + "/" + itemName + "/";
+        String url = urlServer + getEndpoint() + "/" + itemName;
         File rootPath = new File(System.getProperty("user.dir"));
         Log.log(Level.FINE, "Starts: Request create file");
         Log.log(Level.FINE, "URL: " + url);
