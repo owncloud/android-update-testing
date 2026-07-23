@@ -10,22 +10,21 @@ import java.util.Properties;
 
 public class LocProperties {
 
-    private static Properties properties = null;
+    private static final Properties properties;
 
-    private LocProperties() {
-        try {
-            properties = new Properties();
-            FileInputStream inputStream = new FileInputStream("local.properties");
-            properties.load(inputStream);
+    static {
+        Properties p = new Properties();
+        try (FileInputStream inputStream = new FileInputStream("local.properties")) {
+            p.load(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ExceptionInInitializerError("Cannot load local.properties: " + e.getMessage());
         }
+        properties = p;
     }
 
+    private LocProperties() {}
+
     public static Properties getProperties() {
-        if (properties == null) {
-            new LocProperties();
-        }
         return properties;
     }
 }
