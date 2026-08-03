@@ -1,9 +1,9 @@
 [versions]
-cucumber = "7.34.4"
+cucumber = "7.34.6"
 apacheCommonsExec = "1.6.0"
 apacheCommonsLang = "3.20.0"
 apacheCommonsText = "1.15.0"
-apacheCommonsCodec = "1.22.0"
+apacheCommonsCodec = "1.22.1"
 apacheCommonsIo = "2.22.0"
 appiumJavaClient = "10.1.1"
 okhttp = "5.4.0"
