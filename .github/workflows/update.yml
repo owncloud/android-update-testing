@@ -2,6 +2,17 @@ name: Update Test
 
 on:
   workflow_dispatch:
+    inputs:
+      from_version:
+        description: 'Version to upgrade from (e.g. latest, 4.5.0, a branch name). Defaults to latest stable.'
+        type: string
+        required: false
+        default: ''
+      to_version:
+        description: 'Version to upgrade to (e.g. master, a branch name, a commit SHA). Defaults to master.'
+        type: string
+        required: false
+        default: ''
   schedule:
     - cron: '0 1 * * 1'    # Monday at 01:00AM UTC
     - cron: '0 1 * * 2-5'  # Tuesday to Friday at 01:00AM
@@ -84,7 +95,7 @@ jobs:
     uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
-      version: latest
+      version: ${{ inputs.from_version || 'latest' }}
 
   # Builds the apk to install from the current master
   build_apk_master:
@@ -95,7 +106,7 @@ jobs:
     uses: owncloud/android/.github/workflows/build-apk.yml@master
     with:
       build_variant: qaRelease
-      version: master
+      version: ${{ inputs.to_version || 'master' }}
 
   # Signs build from latest
   sign_latest:
@@ -104,7 +115,7 @@ jobs:
       - build_apk_latest
     uses: ./.github/workflows/sign-apk.yml
     with:
-      version: latest
+      version: ${{ inputs.from_version || 'latest' }}
       unsigned_artifact_name: ${{ needs.build_apk_latest.outputs.artifact_name }}
     secrets: inherit
 
@@ -115,7 +126,7 @@ jobs:
       - build_apk_master
     uses: ./.github/workflows/sign-apk.yml
     with:
-      version: master
+      version: ${{ inputs.to_version || 'master' }}
       unsigned_artifact_name: ${{ needs.build_apk_master.outputs.artifact_name }}
     secrets: inherit
 
@@ -148,22 +159,22 @@ jobs:
       - name: Download signed APK from latest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: owncloudSigned-latest
+          name: owncloudSigned-${{ inputs.from_version || 'latest' }}
           path: ./
 
       # Download the APK artifact published by sign_master job
       - name: Download signed APK from master
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: owncloudSigned-master
+          name: owncloudSigned-${{ inputs.to_version || 'master' }}
           path: ./
 
       # Move apk to resources folder
       - name: Move and rename APKs to resources directory
         run: |
           ls -al .
-          mv ./owncloudSigned-latest.apk ./src/test/resources/owncloudSignedLatest.apk
-          mv ./owncloudSigned-master.apk ./src/test/resources/owncloudSignedMaster.apk
+          mv ./owncloudSigned-${{ inputs.from_version || 'latest' }}.apk ./src/test/resources/owncloudSignedLatest.apk
+          mv ./owncloudSigned-${{ inputs.to_version || 'master' }}.apk ./src/test/resources/owncloudSignedMaster.apk
           ls -al ./src/test/resources
 
       # Start Appium server
