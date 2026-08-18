@@ -200,6 +200,16 @@ jobs:
           echo Hash shortened: $SHORT_HASH
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
 
+      # Generate a human-readable summary of the versions under test
+      - name: Generate version summary
+        run: |
+          cat <<EOF > versions.txt
+          From version: ${{ inputs.from_version || 'latest' }}
+          From commit:  ${{ needs.build_apk_latest.outputs.commit_hash }}
+          To version:   ${{ inputs.to_version || 'master' }}
+          To commit:    ${{ needs.build_apk_master.outputs.commit_hash }}
+          EOF
+
       # Run tests over emulator and catch crash logs
       - name: Run Emulator & Execute tests
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
@@ -268,6 +278,14 @@ jobs:
         with:
           name: video-recording
           path: ./test-recording.zip
+
+      # Upload version summary
+      - name: Upload Version Summary
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: version-summary
+          path: ./versions.txt
 
   # Cleans up the server
   cleanup:
