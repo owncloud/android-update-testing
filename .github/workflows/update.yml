@@ -200,42 +200,13 @@ jobs:
           echo Hash shortened: $SHORT_HASH
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
 
-      # Generate a human-readable summary of the versions under test
       - name: Generate version summary
         env:
-          FROM_COMMIT_OUTPUT: ${{ needs.build_apk_latest.outputs.commit_hash }}
-          TO_COMMIT_OUTPUT: ${{ needs.build_apk_master.outputs.commit_hash }}
-          GH_TOKEN: ${{ github.token }}
+          FROM_COMMIT: ${{ needs.build_apk_latest.outputs.commit_hash }}
+          TO_COMMIT: ${{ needs.build_apk_master.outputs.commit_hash }}
         run: |
           FROM_VERSION="${{ inputs.from_version || 'latest' }}"
           TO_VERSION="${{ inputs.to_version || 'master' }}"
-
-          resolve_commit() {
-            local version="$1"
-            local build_output="$2"
-
-            # Use the build job output if available
-            [ -n "$build_output" ] && { echo "$build_output"; return; }
-
-            # Try resolving as a branch or tag via ls-remote
-            local commit
-            commit=$(git ls-remote https://github.com/owncloud/android \
-              "refs/heads/$version" "refs/tags/$version" 2>/dev/null \
-              | head -1 | awk '{print $1}')
-
-            # For 'latest', resolve the latest release tag via the GitHub API
-            if [ -z "$commit" ] && [ "$version" = "latest" ]; then
-              local tag
-              tag=$(gh api repos/owncloud/android/releases/latest --jq '.tag_name' 2>/dev/null)
-              [ -n "$tag" ] && commit=$(git ls-remote https://github.com/owncloud/android \
-                "refs/tags/$tag" 2>/dev/null | awk '{print $1}')
-            fi
-
-            echo "${commit:-unknown}"
-          }
-
-          FROM_COMMIT=$(resolve_commit "$FROM_VERSION" "$FROM_COMMIT_OUTPUT")
-          TO_COMMIT=$(resolve_commit "$TO_VERSION" "$TO_COMMIT_OUTPUT")
 
           {
             echo "From version: $FROM_VERSION"
