@@ -9,7 +9,6 @@ on:
         required: true
       SSH_USER:
         required: true
-      OCIS_PWD:
   workflow_dispatch:
 
 permissions:
@@ -28,24 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      # Check ansible
-      - name: Check Ansible
-        run: ansible --version
-
-      # Save the private key in SSH directory
-      - name: Setup SSH key
-        run: |
-          mkdir -p $HOME/.ssh
-          echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_ed25519
-          chmod 600 $HOME/.ssh/id_ed25519
-          # Add host to known_hosts to prevent SSH prompt
-          ssh-keyscan -H $SSH_HOST >> $HOME/.ssh/known_hosts
-
-      # Generate inventory file for the OCIS server
-      - name: Create ansible inventory
-        run: |
-          echo "[ocis_server]" > ./server/ansible/hosts.ini
-          echo "${SSH_HOST} ansible_user=${SSH_USER} ansible_ssh_private_key_file=$HOME/.ssh/id_ed25519" >> ./server/ansible/hosts.ini
+      - name: Setup Ansible and SSH
+        uses: ./.github/workflows/ansible-setup
+        with:
+          ssh_private_key: ${{ env.SSH_PRIVATE_KEY }}
+          ssh_host: ${{ env.SSH_HOST }}
+          ssh_user: ${{ env.SSH_USER }}
 
       # Clean up containers and images in the remote server
       - name: Run clean up

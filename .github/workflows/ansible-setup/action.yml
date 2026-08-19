@@ -1,0 +1,34 @@
+name: Ansible SSH setup
+description: Checks Ansible, installs the SSH key, and creates the inventory file
+
+inputs:
+  ssh_private_key:
+    description: Ed25519 private key for SSH access
+    required: true
+  ssh_host:
+    description: Remote VM hostname
+    required: true
+  ssh_user:
+    description: Remote VM SSH user
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check Ansible
+      shell: bash
+      run: ansible --version
+
+    - name: Setup SSH key
+      shell: bash
+      run: |
+        mkdir -p $HOME/.ssh
+        echo "${{ inputs.ssh_private_key }}" > $HOME/.ssh/id_ed25519
+        chmod 600 $HOME/.ssh/id_ed25519
+        ssh-keyscan -H ${{ inputs.ssh_host }} >> $HOME/.ssh/known_hosts
+
+    - name: Create Ansible inventory
+      shell: bash
+      run: |
+        echo "[ocis_server]" > ./server/ansible/hosts.ini
+        echo "${{ inputs.ssh_host }} ansible_user=${{ inputs.ssh_user }} ansible_ssh_private_key_file=$HOME/.ssh/id_ed25519" >> ./server/ansible/hosts.ini
