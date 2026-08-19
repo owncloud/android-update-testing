@@ -134,6 +134,7 @@ jobs:
   update_test:
     name: Update test
     needs:
+      - build_apk_latest
       - build_apk_master
       - sign_latest
       - sign_master
