@@ -64,11 +64,9 @@ jobs:
             echo "BASE_URL=${{ inputs.ocis_url }}" >> $GITHUB_ENV
           fi
 
-      # Install Ansible on the runner
-      - name: Install Ansible
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y ansible
+      # Check ansible
+      - name: Check Ansible
+        run: ansible --version
 
       # Save the private key in SSH directory
       - name: Setup SSH key
