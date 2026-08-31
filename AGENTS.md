@@ -10,17 +10,19 @@ This file provides context for AI coding agents (Claude Code, GitHub Copilot, Cu
 - **CI system:** GitHub Actions
 
 ## Architecture & Key Paths
-- `src/` - Test source code
+- `src/` - Test source code; the single Gherkin feature file is
+  `src/test/resources/io/cucumber/features.feature`
 - `server/` - Server setup scripts
 - `build.gradle` - Gradle build configuration
 - `gradle/` - Gradle wrapper
 - `runAppium.sh` - Appium server launcher
-- `local.properties` - Local configuration (APK names, passcode, package name, Appium URL)
+- `local.properties` - Local configuration (APK names, passcode, package name,
+  Appium URL). Gitignored; see `LocProperties.java` for the keys it expects.
 
 ## Development Conventions
 - **Branching:** main
 - **Commit messages:** DCO sign-off required (`git commit -s`)
-- **Code style:** No specific linter configured
+- **Code style:** No linter is configured
 - **PR process:** Open a PR against main. All CI checks must pass.
 
 ## Build & Test Commands
@@ -28,16 +30,59 @@ This file provides context for AI coding agents (Claude Code, GitHub Copilot, Cu
 # Build
 ./gradlew build
 
+# Build without running tests
+./gradlew build -x test
+
 # Test
 ./gradlew clean test -Dserver="https://myserver:9200" -Dusername=john -Dpassword=mypass -Dcommit=87a6f33
 ```
+
+## Test Architecture
+
+A single-scenario Cucumber/JUnit/Appium suite that verifies the ownCloud Android
+app upgrade path.
+
+### Layer model
+
+All Cucumber classes receive a `World` instance via PicoContainer constructor
+injection. `World` is the single service locator — it lazily constructs every
+collaborator on first access.
+
+```
+StepDefinitions  ->  preconditions / tasks / assertions  ->  pages / APIs
+                                    ^
+                                  World
+```
+
+- **`steps/StepDefinitions`** - thin glue only; each step body is a single delegation call.
+- **`preconditions/`** - server-side setup via API before the app is touched (`@Given`).
+- **`tasks/`** - UI interactions the actor performs (`@When`).
+- **`assertions/`** - state verification with `assertTrue`/`assertEquals` (`@Then`).
+- **`pages/`** - Page Object Model; one class per screen. `CommonPage` is the base.
+- **`api/`** - OkHttp-based REST/WebDAV clients. `CommonAPI` is the base (holds
+  credentials, personal-space ID, `baseRequestBuilder()`). All `Response` objects
+  must be wrapped in try-with-resources.
+- **`world/World`** - lazy singleton hub; never instantiates a collaborator more
+  than once per scenario.
+- **`hooks/Hooks`** - Cucumber `@Before`/`@After`; starts/stops screen recording
+  and device cleanup.
+- **`support/`** - cross-cutting utilities: `Log`, `StepLogger`, `ScreenRecorder`,
+  `DeviceClient`, `oCHttpClient`, SAX/JSON parsers.
+
+### Things to know before changing the code
+
+- `isOCIS` in `CommonAPI` is hardcoded `true` - all OC10 branches in the API
+  layer are unreachable dead code.
+- `AndroidManager` is a static singleton; `getDriver()` initialises it on first call.
+- `ScreenRecorder` saves video only when a scenario fails.
 
 ## Important Constraints
 - All code contributions must be compatible with the **GPL-3.0** license
 - Do not introduce new **copyleft-licensed dependencies** (GPL, AGPL, LGPL, MPL) without explicit discussion in an issue first. This is especially important for repos migrating to Apache 2.0.
 - Do not introduce new dependencies without discussion in an issue first
 - Tests require a running Appium server and an Android device/emulator
-- Tests require two APK files (older and newer versions) and a running ownCloud server
+- Tests require two APK files (older and newer versions) placed under
+  `src/test/resources/`, and a reachable ownCloud server
 
 
 ## OSPO Policy Constraints
