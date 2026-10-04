@@ -1,7 +1,7 @@
 [versions]
 cucumber = "7.34.7"
 apacheCommonsExec = "1.6.0"
-apacheCommonsLang = "3.20.0"
+apacheCommonsLang = "3.21.0"
 apacheCommonsText = "1.15.0"
 apacheCommonsCodec = "1.22.1"
 apacheCommonsIo = "2.22.0"
