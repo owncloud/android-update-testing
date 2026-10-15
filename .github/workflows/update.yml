@@ -158,14 +158,14 @@ jobs:
 
       # Download the APK artifact published by sign_latest job
       - name: Download signed APK from latest
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: owncloudSigned-${{ inputs.from_version || 'latest' }}
           path: ./
 
       # Download the APK artifact published by sign_master job
       - name: Download signed APK from master
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: owncloudSigned-${{ inputs.to_version || 'master' }}
           path: ./
@@ -247,7 +247,7 @@ jobs:
       # If crash happened, upload crash log
       - name: Upload crash log artifact
         if: always() && hashFiles('crash_log.txt') != ''
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: crash-log
           path: crash_log.txt
@@ -261,7 +261,7 @@ jobs:
       # Upload log file
       - name: Upload Execution Log
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: logs
           path: ./logs/log.log
@@ -269,7 +269,7 @@ jobs:
       # Upload appium log
       - name: Upload Appium Log
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: appium
           path: ./appium.log
@@ -282,7 +282,7 @@ jobs:
       # Upload video file
       - name: Upload Video
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: video-recording
           path: ./test-recording.zip
@@ -290,7 +290,7 @@ jobs:
       # Upload version summary
       - name: Upload Version Summary
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: version-summary
           path: ./versions.txt
