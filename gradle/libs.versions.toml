@@ -6,7 +6,8 @@ apacheCommonsLang = "3.21.0"
 apacheCommonsText = "1.15.0"
 apacheCommonsCodec = "1.23.0"
 apacheCommonsIo = "2.22.0"
-appiumJavaClient = "10.1.1"
+appiumJavaClient = "11.0.0"
+selenium = "4.51.0"
 okhttp = "5.5.0"
 slf4jApi = "2.0.20"
 slf4jNop = "2.0.20"
@@ -27,6 +28,7 @@ commons-text = { module = "org.apache.commons:commons-text", version.ref = "apac
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "apacheCommonsCodec" }
 commons-io = { module = "commons-io:commons-io", version.ref = "apacheCommonsIo" }
 appium-java-client = { module = "io.appium:java-client", version.ref = "appiumJavaClient" }
+selenium-support = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4jNop" }
@@ -35,6 +37,6 @@ assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore
 
 [bundles]
 cucumber = ["cucumber-java", "cucumber-junit-platform-engine", "cucumber-core", "cucumber-picocontainer", "junit-platform-suite"]
-appium = ["appium-java-client", "okhttp", "json", "slf4j-nop"]
+appium = ["appium-java-client", "selenium-support", "okhttp", "json", "slf4j-nop"]
 commons = ["commons-text", "commons-codec", "commons-io"]
 testing = ["commons-exec", "commons-lang3", "slf4j-api", "junit", "assertj-core"]
