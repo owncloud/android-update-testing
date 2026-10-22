@@ -4,36 +4,18 @@
 
 package update.runner;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
+import org.junit.platform.suite.api.IncludeEngines;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 
-import java.util.logging.Level;
+import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
+import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 
-import update.pages.AndroidManager;
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import update.LocProperties;
-import update.support.log.Log;
-
-@RunWith(Cucumber.class)
-@CucumberOptions(
-        plugin = {"pretty"},
-        glue = "update",
-        features = "src/test/resources/io/cucumber/"
-)
+@Suite
+@IncludeEngines("cucumber")
+@SelectPackages("io.cucumber")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "update")
+@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class RunCucumberTest {
-
-    @BeforeClass
-    public static void beforeclass() {
-        Log.init();
-        Log.log(Level.FINE, "START EXECUTION\n");
-    }
-
-    @AfterClass
-    public static void afterclass() {
-        AndroidManager.getDriver().removeApp(LocProperties.getProperties().getProperty("appPackage"));
-        AndroidManager.getDriver().quit();
-        Log.log(Level.FINE, "END EXECUTION\n");
-    }
 }

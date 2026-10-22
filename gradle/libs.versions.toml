@@ -1,5 +1,6 @@
 [versions]
-cucumber = "7.34.7"
+cucumber = "8.0.4"
+junitPlatform = "6.1.3"
 apacheCommonsExec = "1.6.0"
 apacheCommonsLang = "3.21.0"
 apacheCommonsText = "1.15.0"
@@ -15,9 +16,10 @@ assertjCore = "3.27.7"
 
 [libraries]
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
-cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
+cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
 cucumber-core = { module = "io.cucumber:cucumber-core", version.ref = "cucumber" }
 cucumber-picocontainer = { module = "io.cucumber:cucumber-picocontainer", version.ref = "cucumber" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite", version.ref = "junitPlatform" }
 json = { module = "org.json:json", version.ref = "json" }
 commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "apacheCommonsExec" }
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "apacheCommonsLang" }
@@ -32,7 +34,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
 
 [bundles]
-cucumber = ["cucumber-java", "cucumber-junit", "cucumber-core", "cucumber-picocontainer"]
+cucumber = ["cucumber-java", "cucumber-junit-platform-engine", "cucumber-core", "cucumber-picocontainer", "junit-platform-suite"]
 appium = ["appium-java-client", "okhttp", "json", "slf4j-nop"]
 commons = ["commons-text", "commons-codec", "commons-io"]
 testing = ["commons-exec", "commons-lang3", "slf4j-api", "junit", "assertj-core"]

@@ -8,6 +8,12 @@ buildscript {
 
 apply plugin: 'java'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 dependencies {
     testImplementation libs.bundles.cucumber
     testImplementation libs.bundles.testing
@@ -24,6 +30,7 @@ test {
 }
 
 test {
+    useJUnitPlatform()
     testLogging.showStandardStreams = true
     systemProperty "server", System.getProperty("server")
     systemProperty "username", System.getProperty("username")

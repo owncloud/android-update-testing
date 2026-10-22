@@ -15,7 +15,9 @@ import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 
 import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.Scenario;
 import update.LocProperties;
 import update.model.OCFile;
@@ -29,6 +31,19 @@ public class Hooks {
 
     public Hooks(World world) {
         this.world = world;
+    }
+
+    @BeforeAll
+    public static void suiteSetup() {
+        Log.init();
+        Log.log(Level.FINE, "START EXECUTION\n");
+    }
+
+    @AfterAll
+    public static void suiteTearDown() {
+        AndroidManager.getDriver().removeApp(LocProperties.getProperties().getProperty("appPackage"));
+        AndroidManager.getDriver().quit();
+        Log.log(Level.FINE, "END EXECUTION\n");
     }
 
     @Before
