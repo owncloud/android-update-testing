@@ -34,7 +34,7 @@ jobs:
           path: ./
 
       - name: Move APK to root directory
-        run: cp ./${INPUTS_UNSIGNED_ARTIFACT_NAME} ./owncloud-${INPUTS_VERSION}.apk
+        run: cp "./${INPUTS_UNSIGNED_ARTIFACT_NAME}" "./owncloud-${INPUTS_VERSION}.apk"
         env:
           INPUTS_UNSIGNED_ARTIFACT_NAME: ${{ inputs.unsigned_artifact_name }}
           INPUTS_VERSION: ${{ inputs.version }}
