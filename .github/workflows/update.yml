@@ -43,6 +43,7 @@ jobs:
           ref: master
           fetch-depth: 0
           path: android-repo
+          persist-credentials: false
 
       - name: Check commits from previous day
         id: check
@@ -76,7 +77,7 @@ jobs:
     needs:
       - check_repo_changes
     if: github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true'
-    uses: ./.github/workflows/ocisbackend.yml
+    uses: $/.github/workflows/ocisbackend.yml
     with:
       ocis_version: ${{ vars.OCIS_VERSION }}
     secrets:
@@ -113,22 +114,28 @@ jobs:
     name: Sign latest APK
     needs:
       - build_apk_latest
-    uses: ./.github/workflows/sign-apk.yml
+    uses: $/.github/workflows/sign-apk.yml
     with:
       version: ${{ inputs.from_version || 'latest' }}
       unsigned_artifact_name: ${{ needs.build_apk_latest.outputs.artifact_name }}
-    secrets: inherit
+    secrets:
+      TEST_KS_B64: ${{ secrets.TEST_KS_B64 }}
+      TEST_KS_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+      TEST_KS_KEY: ${{ secrets.TEST_KS_KEY }}
 
   # Signs build from master
   sign_master:
     name: Sign master APK
     needs:
       - build_apk_master
-    uses: ./.github/workflows/sign-apk.yml
+    uses: $/.github/workflows/sign-apk.yml
     with:
       version: ${{ inputs.to_version || 'master' }}
       unsigned_artifact_name: ${{ needs.build_apk_master.outputs.artifact_name }}
-    secrets: inherit
+    secrets:
+      TEST_KS_B64: ${{ secrets.TEST_KS_B64 }}
+      TEST_KS_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
+      TEST_KS_KEY: ${{ secrets.TEST_KS_KEY }}
 
   # Launches the test
   update_test:
@@ -148,6 +155,8 @@ jobs:
       # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
 
       - name: Show current branch and commit
         run: |
@@ -172,10 +181,13 @@ jobs:
 
       # Move apk to resources folder
       - name: Move and rename APKs to resources directory
+        env:
+          FROM_VERSION: ${{ inputs.from_version || 'latest' }}
+          TO_VERSION: ${{ inputs.to_version || 'master' }}
         run: |
           ls -al .
-          mv ./owncloudSigned-${{ inputs.from_version || 'latest' }}.apk ./src/test/resources/owncloudSignedLatest.apk
-          mv ./owncloudSigned-${{ inputs.to_version || 'master' }}.apk ./src/test/resources/owncloudSignedMaster.apk
+          mv "./owncloudSigned-${FROM_VERSION}.apk" ./src/test/resources/owncloudSignedLatest.apk
+          mv "./owncloudSigned-${TO_VERSION}.apk" ./src/test/resources/owncloudSignedMaster.apk
           ls -al ./src/test/resources
 
       # Start Appium server
@@ -196,19 +208,20 @@ jobs:
       - name: Shorten the built commit hash
         shell: bash
         run: |
-          COMMIT_HASH="${{ needs.build_apk_master.outputs.commit_hash }}"
+          COMMIT_HASH="${NEEDS_BUILD_APK_MASTER_OUTPUTS_COMMIT_HASH}"
           SHORT_HASH=${COMMIT_HASH:0:7}
           echo Hash shortened: $SHORT_HASH
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
+        env:
+          NEEDS_BUILD_APK_MASTER_OUTPUTS_COMMIT_HASH: ${{ needs.build_apk_master.outputs.commit_hash }}
 
       - name: Generate version summary
         env:
           FROM_COMMIT: ${{ needs.build_apk_latest.outputs.commit_hash }}
           TO_COMMIT: ${{ needs.build_apk_master.outputs.commit_hash }}
+          FROM_VERSION: ${{ inputs.from_version || 'latest' }}
+          TO_VERSION: ${{ inputs.to_version || 'master' }}
         run: |
-          FROM_VERSION="${{ inputs.from_version || 'latest' }}"
-          TO_VERSION="${{ inputs.to_version || 'master' }}"
-
           {
             echo "From version: $FROM_VERSION"
             echo "From commit:  $FROM_COMMIT"
@@ -303,7 +316,7 @@ jobs:
       - create_ocis
       - check_repo_changes
     if: always() && (github.event_name == 'workflow_dispatch' || needs.check_repo_changes.outputs.has_changes == 'true')
-    uses: ./.github/workflows/cleanup.yml
+    uses: $/.github/workflows/cleanup.yml
     secrets:
       ssh_host: ${{ secrets.SSH_HOST }}
       ssh_user: ${{ secrets.SSH_USER }}
