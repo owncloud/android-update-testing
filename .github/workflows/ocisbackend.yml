@@ -54,6 +54,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
 
       # If workflow_call secret exists, use it; otherwise use dispatch input
       - name: Set BASE_URL
@@ -61,11 +63,13 @@ jobs:
           if [ -n "${{ secrets.OCIS_URL }}" ]; then
             echo "BASE_URL=${{ secrets.OCIS_URL }}" >> $GITHUB_ENV
           else
-            echo "BASE_URL=${{ inputs.ocis_url }}" >> $GITHUB_ENV
+            echo "BASE_URL=${INPUTS_OCIS_URL}" >> $GITHUB_ENV
           fi
+        env:
+          INPUTS_OCIS_URL: ${{ inputs.ocis_url }}
 
       - name: Setup Ansible and SSH
-        uses: ./.github/workflows/ansible-setup
+        uses: $/.github/workflows/ansible-setup
         with:
           ssh_private_key: ${{ env.SSH_PRIVATE_KEY }}
           ssh_host: ${{ env.SSH_HOST }}

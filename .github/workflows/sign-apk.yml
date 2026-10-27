@@ -34,7 +34,10 @@ jobs:
           path: ./
 
       - name: Move APK to root directory
-        run: cp ./${{ inputs.unsigned_artifact_name }} ./owncloud-${{ inputs.version }}.apk
+        run: cp "./${INPUTS_UNSIGNED_ARTIFACT_NAME}" "./owncloud-${INPUTS_VERSION}.apk"
+        env:
+          INPUTS_UNSIGNED_ARTIFACT_NAME: ${{ inputs.unsigned_artifact_name }}
+          INPUTS_VERSION: ${{ inputs.version }}
 
       - name: Restore keystore
         run: |
@@ -45,10 +48,11 @@ jobs:
         env:
           KEY_ALIAS: ${{ secrets.TEST_KS_ALIAS }}
           KEY_PASSWORD: ${{ secrets.TEST_KS_KEY }}
+          INPUTS_VERSION: ${{ inputs.version }}
         run: |
-          APK_INPUT="owncloud-${{ inputs.version }}.apk"
-          APK_ALIGNED="owncloud-${{ inputs.version }}-aligned.apk"
-          APK_SIGNED="owncloudSigned-${{ inputs.version }}.apk"
+          APK_INPUT="owncloud-${INPUTS_VERSION}.apk"
+          APK_ALIGNED="owncloud-${INPUTS_VERSION}-aligned.apk"
+          APK_SIGNED="owncloudSigned-${INPUTS_VERSION}.apk"
           KEYSTORE="./test.keystore"
 
           echo "Aligning APK..."

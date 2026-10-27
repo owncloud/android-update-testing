@@ -26,9 +26,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
 
       - name: Setup Ansible and SSH
-        uses: ./.github/workflows/ansible-setup
+        uses: $/.github/workflows/ansible-setup
         with:
           ssh_private_key: ${{ env.SSH_PRIVATE_KEY }}
           ssh_host: ${{ env.SSH_HOST }}
